@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create jar" name="Create Runnable Jar for Project JSON Library">
+	<!--this file was created by Eclipse Runnable JAR Export Wizard-->
+	<!--ANT 1.8 is required                                        -->
+
+	<property name="src" location="src" />
+	<property name="bin" location="bin" />
+	<property name="doc" location="doc" />
+	<property name="libs" location="../" />
+	<fileset id="libraries" dir="${libs}">
+		<include name="CustomStructures.jar" />
+		<include name="lexer.jar" />
+	</fileset>
+	<target name="javadoc">
+		<javadoc access="protected" author="true" destdir="${doc}" packagenames="*" source="1.8" splitindex="true" use="true" version="true" sourcepath="${src}">
+			<classpath>
+				<fileset refid="libraries" />
+			</classpath>
+		</javadoc>
+	</target>
+
+	<target name="build">
+		<mkdir dir="${bin}" />
+		<javac srcdir="${src}" destdir="${bin}" includeAntRuntime="false" debug="true" debuglevel="lines,vars,source">
+			<classpath>
+				<fileset refid="libraries" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="create jar" depends="clean,javadoc,build">
+		<jar destfile="../JSONLib.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${bin}" />
+			<fileset dir="." includes="${doc}/**" />
+			<fileset dir="${src}" />
+			<restrict>
+				<name regex=".*\.(class|java)" />
+				<archives>
+					<zips>
+						<fileset refid="libraries" />
+					</zips>
+				</archives>
+			</restrict>
+		</jar>
+	</target>
+
+	<target name="clean" description="Remove all files created by the build process.">
+		<delete dir="${bin}" />
+		<delete dir="${doc}" />
+	</target>
+	<!--	<target name="javadoc">
+		<javadoc access="protected" author="true" destdir="doc" packagenames="*" source="1.8" splitindex="true" use="true" version="true">
+			<fileset dir="src" defaultexcludes="no">
+				<exclude name="**/*.DS_Store" />
+			</fileset>
+			<classpath>
+				<fileset refid="libraries" />
+			</classpath>
+		</javadoc>
+	</target>
+
+	<target name="create_run_jar" depends="javadoc">
+		<jar destfile="../JSONLib.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="./bin/" includes="lipstone/**" />
+			<fileset dir="." includes="doc/**" />
+			<fileset dir="./src/" />
+			<zipfileset excludes="META-INF/*.SF" src="../CustomStructures.jar" />
+			<zipfileset excludes="META-INF/*.SF" src="../Lexer.jar" />
+		</jar>
+	</target>-->
+</project>
