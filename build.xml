@@ -51,28 +51,4 @@
 		<delete dir="${bin}" />
 		<delete dir="${doc}" />
 	</target>
-	<!--	<target name="javadoc">
-		<javadoc access="protected" author="true" destdir="doc" packagenames="*" source="1.8" splitindex="true" use="true" version="true">
-			<fileset dir="src" defaultexcludes="no">
-				<exclude name="**/*.DS_Store" />
-			</fileset>
-			<classpath>
-				<fileset refid="libraries" />
-			</classpath>
-		</javadoc>
-	</target>
-
-	<target name="create_run_jar" depends="javadoc">
-		<jar destfile="../JSONLib.jar" filesetmanifest="mergewithoutmain">
-			<manifest>
-				<attribute name="Main-Class" value="" />
-				<attribute name="Class-Path" value="." />
-			</manifest>
-			<fileset dir="./bin/" includes="lipstone/**" />
-			<fileset dir="." includes="doc/**" />
-			<fileset dir="./src/" />
-			<zipfileset excludes="META-INF/*.SF" src="../CustomStructures.jar" />
-			<zipfileset excludes="META-INF/*.SF" src="../Lexer.jar" />
-		</jar>
-	</target>-->
 </project>
