@@ -1,4 +1,4 @@
-package lipstone.joshua.jsonLib;
+package toberumono.json;
 
 public enum JSONType {
 	STRING,
@@ -7,5 +7,5 @@ public enum JSONType {
 	ARRAY,
 	BOOLEAN,
 	NULL,
-	UNINIT
+	WRAPPED
 }

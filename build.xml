@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create jar" name="Create Runnable Jar for Project JSON Library">
+<project default="create jar nolibs" name="Create Runnable Jar for Project JSON Library">
 	<!--this file was created by Eclipse Runnable JAR Export Wizard-->
-	<!--ANT 1.8 is required                                        -->
+	<!--ANT 1.9.4 is required                                        -->
 
 	<property name="src" location="src" />
 	<property name="bin" location="bin" />
 	<property name="doc" location="doc" />
 	<property name="libs" location="../" />
+	<property name="jar" value="../JSONLib.jar" />
 	<fileset id="libraries" dir="${libs}">
-		<include name="CustomStructures.jar" />
 		<include name="lexer.jar" />
+		<include name="CustomStructures.jar" />
 	</fileset>
+
+	<!--Files that should be excluded from the build go here-->
+	<patternset id="Build Excludes">
+		<exclude name="testCases/**" />
+	</patternset>
+	
 	<target name="javadoc">
-		<javadoc access="protected" author="true" destdir="${doc}" packagenames="*" source="1.8" splitindex="true" use="true" version="true" sourcepath="${src}">
+		<javadoc access="protected" author="true" destdir="${doc}" packagenames="toberumono.*" source="1.8" splitindex="true" use="true" version="true">
+			<fileset dir="${src}">
+				<patternset refid="Build Excludes" />
+			</fileset>
 			<classpath>
 				<fileset refid="libraries" />
 			</classpath>
@@ -22,6 +32,7 @@
 	<target name="build">
 		<mkdir dir="${bin}" />
 		<javac srcdir="${src}" destdir="${bin}" includeAntRuntime="false" debug="true" debuglevel="lines,vars,source">
+			<patternset refid="Build Excludes" />
 			<classpath>
 				<fileset refid="libraries" />
 			</classpath>
@@ -29,7 +40,7 @@
 	</target>
 
 	<target name="create jar" depends="clean,javadoc,build">
-		<jar destfile="../JSONLib.jar" filesetmanifest="mergewithoutmain">
+		<jar destfile="${jar}" filesetmanifest="mergewithoutmain">
 			<manifest>
 				<attribute name="Class-Path" value="." />
 			</manifest>
@@ -48,7 +59,7 @@
 	</target>
 	
 	<target name="create jar nolibs" depends="clean,javadoc,build">
-		<jar destfile="../JSONLib.jar" filesetmanifest="mergewithoutmain">
+		<jar destfile="${jar}" filesetmanifest="mergewithoutmain">
 			<manifest>
 				<attribute name="Class-Path" value="." />
 			</manifest>
