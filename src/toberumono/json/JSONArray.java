@@ -73,7 +73,7 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<ArrayL
 		return sb.append(get(i).toJSONString()).append(" ]");
 	}
 	
-	static final List<JSONData<?>> wrap(List<?> list) {
-		return list.stream().collect(ArrayList::new, (li, e) -> li.add(e instanceof JSONData ? (JSONData<?>) e : JSONSystem.wrap((Object) e)), ArrayList::addAll);
+	static final JSONArray wrap(List<?> list) {
+		return list.stream().collect(JSONArray::new, (li, e) -> li.add(e instanceof JSONData ? (JSONData<?>) e : JSONSystem.wrap((Object) e)), JSONArray::addAll);
 	}
 }

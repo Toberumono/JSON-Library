@@ -1,13 +1,16 @@
 package toberumono.json;
 
-public class JSONNumber<T extends Number> extends JSONValue<T> {
+import java.util.function.Function;
+
+public class JSONNumber<T> extends JSONValue<T> {
 
 	JSONNumber(T value) {
 		super(value, JSONType.NUMBER);
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public String toJSONString() {
-		return JSONSystem.getWriter().apply(value());
+		return ((Function<Object, String>) JSONSystem.getWriter()).apply(value());
 	}
 }

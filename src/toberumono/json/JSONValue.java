@@ -25,14 +25,12 @@ public class JSONValue<T> implements JSONData<T> {
 	}
 	
 	/**
-	 * If the value is an instance of {@link JSONSerializable}, this forwards to the value's
-	 * {@link JSONSerializable#toJSONString() toJSONString()}.<br>
-	 * Otherwise, it forwards to the value's toString() method.
+	 * This method just forwards to {@link #value() value's} toString method.
+	 * 
+	 * @return {@code value.toString()}
 	 */
 	@Override
 	public String toString() {
-		if (value instanceof JSONSerializable)
-			return ((JSONSerializable) value).toJSONString();
 		return value.toString();
 	}
 	

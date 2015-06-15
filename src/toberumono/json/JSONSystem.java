@@ -24,10 +24,12 @@ import static toberumono.json.JSONType.BOOLEAN;
 public class JSONSystem {
 	static final String LineSeparator = System.lineSeparator();
 	
-	public static final Function<String, ? extends Number> defaultReader = Double::new;
-	public static final Function<? super Number, String> defaultWriter = String::valueOf;
-	private static Function<String, ? extends Number> reader = defaultReader;
-	private static Function<? super Number, String> writer = defaultWriter;
+	public static final Function<String, Double> defaultReader = Double::new;
+	public static final Function<Double, String> defaultWriter = String::valueOf;
+	public static final Class<Double> defaultNumberType = Double.class;
+	private static Function<String, ? extends Object> reader = defaultReader;
+	private static Function<? extends Object, String> writer = defaultWriter;
+	private static Class<?> numberType = defaultNumberType;
 	
 	private static final Type JSONValueType = new Type("JSONValue");
 	private static final Type JSONArrayType = new Type("JSONArray");
@@ -35,11 +37,11 @@ public class JSONSystem {
 	private static final Type JSONKeyValuePairType = new Type("JSONKeyValuePair");
 	private static final Lexer lexer = new Lexer(false);
 	static {
-		String quotes = "\"\u301D\u301E", basicNumber = "([0-9]+(\\.[0-9]*)?|\\.[0-9]+)"; //To avoid copy-pasting
+		String quotes = "\"\u301D\u301E", sign = "[\\+\\-]", basicNumber = "([1-9][0-9]*\\.?[0-9]*|0?\\.[0-9]+)", exp = basicNumber + "[eE]" + sign + basicNumber, infinity = "(" + exp + "|infinity)"; //To avoid copy-pasting
 		lexer.ignore("Spaces", Pattern.compile("\\s+"));
 		lexer.addRule("String", new Rule(Pattern.compile("[" + quotes + "](([^" + quotes + "]|(?<=\\\\)[" + quotes + "])*?)[" + quotes + "]"),
 				(m, l) -> new Token(new JSONString(m.group(1)), JSONValueType)));
-		lexer.addRule("Number", new Rule(Pattern.compile("[\\+\\-]?(" + basicNumber + "([eE][\\+\\-]?" + basicNumber + ")?|infinity)", Pattern.CASE_INSENSITIVE),
+		lexer.addRule("Number", new Rule(Pattern.compile("(" + sign + "?" + infinity + "(" + sign + "(i" + infinity + "|" + infinity + "i|i))?|" + sign + "?(i" + infinity + "|" + infinity + "i|i)(" + sign + infinity + ")?)", Pattern.CASE_INSENSITIVE),
 				(m, l) -> new Token(new JSONNumber<>(JSONSystem.reader.apply(m.group())), JSONValueType)));
 		lexer.addRule("Boolean", new Rule(Pattern.compile("(true|false)", Pattern.CASE_INSENSITIVE),
 				(m, l) -> new Token(new JSONValue<>(Boolean.valueOf(m.group()), BOOLEAN), JSONValueType)));
@@ -74,16 +76,22 @@ public class JSONSystem {
 	 * Defaults to Double::new and String::valueOf<br>
 	 * Replaces nulls with the appropriate default
 	 * 
+	 * @param numberType
+	 *            a {@link Class} object representing the class of the type being used for numbers
 	 * @param reader
 	 *            the function with which to read numbers from a {@link String string}
 	 * @param writer
 	 *            the function with which to write numbers to a {@link String string}
+	 * @param <T>
+	 *            synchronizes the type used for numbers in two functions. If this method is used correctly, this will not
+	 *            have to be explicitly set.
 	 * @see #defaultReader
 	 * @see #defaultWriter
 	 */
-	public static final void setNumberHandlers(Function<String, ? extends Number> reader, Function<? super Number, String> writer) {
+	public static final <T> void setNumberHandlers(Class<T> numberType, Function<String, T> reader, Function<T, String> writer) {
 		JSONSystem.reader = (reader == null ? defaultReader : reader);
 		JSONSystem.writer = (writer == null ? defaultWriter : writer);
+		JSONSystem.numberType = numberType;
 	}
 	
 	/**
@@ -95,19 +103,20 @@ public class JSONSystem {
 	public static final void resetNumberHandlers() {
 		reader = defaultReader;
 		writer = defaultWriter;
+		numberType = defaultNumberType;
 	}
 	
 	/**
 	 * @return the function used to read numbers from {@link String strings}
 	 */
-	public static final Function<String, ? extends Number> getReader() {
+	public static final Function<String, ? extends Object> getReader() {
 		return reader;
 	}
 	
 	/**
 	 * @return the function used to write numbers to {@link String strings}
 	 */
-	public static final Function<? super Number, String> getWriter() {
+	public static final Function<? extends Object, String> getWriter() {
 		return writer;
 	}
 	
@@ -165,9 +174,7 @@ public class JSONSystem {
 	 * @see JSONData#toFormattedJSON()
 	 */
 	public static final void writeJSON(JSONData<?> root, Path path) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		sb = root.toFormattedJSON(sb, "");
-		Files.write(path, Arrays.asList(sb.toString().split(LineSeparator)), Charset.defaultCharset(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+		writeJSON(root, path, true);
 	}
 	
 	/**
@@ -189,7 +196,7 @@ public class JSONSystem {
 	public static final void writeJSON(JSONData<?> root, Path path, boolean formatting) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb = formatting ? root.toFormattedJSON(sb, "") : sb.append(root.toJSONString());
-		Files.write(path, Arrays.asList(sb.toString().split(LineSeparator)), Charset.defaultCharset(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+		Files.write(path, Arrays.asList(sb.toString().split(LineSeparator)), Charset.defaultCharset(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
 	}
 	
 	/**
@@ -211,7 +218,7 @@ public class JSONSystem {
 			return (T) new JSONNull();
 		if (value instanceof JSONData)
 			return (T) value;
-		if (value instanceof Number)
+		if (numberType.isInstance(value))
 			return (T) new JSONNumber<>((Number) value);
 		if (value instanceof String)
 			return (T) new JSONString((String) value);
@@ -223,6 +230,80 @@ public class JSONSystem {
 			return (T) JSONArray.wrap(Arrays.asList(value));
 		if (value instanceof JSONRepresentable)
 			return (T) ((JSONRepresentable) value).toJSONObject();
-		return (T) new JSONValue<>(value, JSONType.WRAPPED);
+		if (value instanceof JSONSerializable)
+			return (T) new JSONWrapped<>((JSONSerializable) value);
+		throw new UnsupportedOperationException("Cannot wrap a value that is not part of JSON's supported values and does not implement JSONSerializable or JSONRepresentable");
+	}
+	
+	/**
+	 * Converts all of the Java special characters ('\'[tbnrf'"\]) into their escaped form, mostly for printing
+	 * {@link String Strings} to files.
+	 * 
+	 * @param str
+	 *            the {@link String} to escape
+	 * @return the escaped form of <tt>str</tt>
+	 * @see #unescape(String)
+	 */
+	public static final String escape(String str) {
+		StringBuilder sb = new StringBuilder(str.length());
+		str.chars().forEach(c -> {
+			if (c == '\t')
+				sb.append("\\t");
+				else if (c == '\b')
+					sb.append("\\b");
+				else if (c == '\n')
+					sb.append("\\n");
+				else if (c == '\r')
+					sb.append("\\r");
+				else if (c == '\f')
+					sb.append("\\f");
+				else if (c == '\'')
+					sb.append("\\'");
+				else if (c == '\"')
+					sb.append("\\\"");
+				else if (c == '\\')
+					sb.append("\\\\");
+				else
+					sb.append((char) c);
+			});
+		return sb.toString();
+	}
+	
+	/**
+	 * Unescapes an escaped {@link String} such that {@code str.equals(unescape(escape(str)))} returns true.
+	 * 
+	 * @param str
+	 *            the escaped {@link String} to unescape
+	 * @return the original (unescaped) form of <tt>str</tt>
+	 * @see #escape(String)
+	 */
+	public static final String unescape(String str) {
+		StringBuilder sb = new StringBuilder(str.length());
+		char[] s = str.toCharArray();
+		int i = 0, lim = s.length - 1;
+		for (; i < lim; i++) {
+			if (s[i] == '\\') {
+				char c = s[++i];
+				if (c == 't')
+					sb.append('\t');
+				else if (c == 'b')
+					sb.append("\b");
+				else if (c == 'n')
+					sb.append("\n");
+				else if (c == 'r')
+					sb.append("\r");
+				else if (c == 'f')
+					sb.append("\f");
+				else if (c == '\'')
+					sb.append("'");
+				else if (c == '"')
+					sb.append("\"");
+				else if (c == '\\')
+					sb.append("\\");
+			}
+			else
+				sb.append(s[i]);
+		}
+		return sb.append(s[i]).toString().trim();
 	}
 }

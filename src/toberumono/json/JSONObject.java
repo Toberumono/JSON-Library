@@ -40,7 +40,7 @@ public final class JSONObject extends HashMap<String, JSONData<?>> implements JS
 			return "{ }";
 		final StringBuilder sb = new StringBuilder();
 		sb.append("{");
-		this.entrySet().stream().forEach(e -> sb.append(LineSeparator).append("\t").append(e.getKey()).append(" : ").append(e.getValue().toJSONString()).append(","));
+		this.entrySet().stream().forEach(e -> sb.append(LineSeparator).append("\t").append(JSONString.toJSONString(e.getKey())).append(" : ").append(e.getValue().toJSONString()).append(","));
 		return sb.deleteCharAt(sb.length() - 1).append(LineSeparator).append("}").toString();
 	}
 	
@@ -50,13 +50,15 @@ public final class JSONObject extends HashMap<String, JSONData<?>> implements JS
 			return sb.append("{ }");
 		String innerIndentation = indentation + "\t";
 		sb.append("{");
-		entrySet().forEach(e -> {
-			sb.append(LineSeparator).append(innerIndentation).append(JSONString.toJSONString(e.getKey())).append(" : ");
-			if (e.getValue() instanceof JSONObject)
-				e.getValue().toFormattedJSON(sb.append(LineSeparator).append(innerIndentation + "\t"), innerIndentation + "\t").append(",");
-				else
-					e.getValue().toFormattedJSON(sb, innerIndentation).append(",");
-			});
+		forEach((k, v) -> {
+			sb.append(LineSeparator).append(innerIndentation).append(JSONString.toJSONString(k)).append(" : ");
+			if (v instanceof JSONObject)
+				v.toFormattedJSON(sb.append(LineSeparator).append(innerIndentation + "\t"), innerIndentation + "\t").append(",");
+			else {
+				v.toFormattedJSON(sb, innerIndentation);
+				sb.append(",");
+			}
+		});
 		return sb.deleteCharAt(sb.length() - 1).append(LineSeparator).append(indentation).append("}");
 	}
 	

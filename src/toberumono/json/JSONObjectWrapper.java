@@ -62,24 +62,27 @@ public final class JSONObjectWrapper<T> implements Map<String, T>, JSONData<JSON
 	@Override
 	@SuppressWarnings("unchecked")
 	public T get(Object key) {
-		return (T) back.get(key).value();
+		JSONData<?> out = back.get(key);
+		return out == null ? null : (T) out.value();
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public T put(String key, T value) {
-		return (T) back.put(key, JSONSystem.wrap(value)).value();
+		JSONData<?> out = back.put(key, JSONSystem.wrap(value));
+		return out == null ? null : (T) out.value();
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public T remove(Object key) {
-		return (T) back.remove(key).value();
+		JSONData<?> out = back.remove(key);
+		return out == null ? null : (T) out.value();
 	}
 	
 	@Override
 	public void putAll(Map<? extends String, ? extends T> m) {
-		m.forEach((k, v) -> put(k, v));
+		m.forEach((k, v) -> put(k, JSONSystem.wrap(v)));
 	}
 	
 	@Override
