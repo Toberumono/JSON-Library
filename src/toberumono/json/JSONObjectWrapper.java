@@ -25,6 +25,12 @@ public final class JSONObjectWrapper<T> implements Map<String, T>, JSONData<JSON
 	private Values values = null;
 	private Set<Map.Entry<String, T>> entrySet = null;
 	
+	/**
+	 * Wraps the given {@link JSONObject}
+	 * 
+	 * @param back
+	 *            the {@link JSONObject} to wrap
+	 */
 	public JSONObjectWrapper(JSONObject back) {
 		this.back = back;
 	}

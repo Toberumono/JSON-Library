@@ -1,6 +1,7 @@
 package toberumono.json;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,8 +20,18 @@ import lipstone.joshua.lexer.Rule;
 import lipstone.joshua.lexer.Token;
 import lipstone.joshua.lexer.Type;
 
-import static toberumono.json.JSONType.BOOLEAN;
-
+/**
+ * Core class for this library. Contains methods to read from and write to JSON files as well as change the type used for
+ * numbers when reading from and writing to JSON files.
+ * 
+ * @author Joshua Lipstone
+ * @see #loadJSON(Path)
+ * @see #parseJSON(String)
+ * @see #writeJSON(JSONData, Path)
+ * @see #wrap(Object)
+ * @see #escape(String)
+ * @see #unescape(String)
+ */
 public class JSONSystem {
 	static final String LineSeparator = System.lineSeparator();
 	
@@ -44,7 +55,7 @@ public class JSONSystem {
 		lexer.addRule("Number", new Rule(Pattern.compile("(" + sign + "?" + infinity + "(" + sign + "(i" + infinity + "|" + infinity + "i|i))?|" + sign + "?(i" + infinity + "|" + infinity + "i|i)(" + sign + infinity + ")?)", Pattern.CASE_INSENSITIVE),
 				(m, l) -> new Token(new JSONNumber<>(JSONSystem.reader.apply(m.group())), JSONValueType)));
 		lexer.addRule("Boolean", new Rule(Pattern.compile("(true|false)", Pattern.CASE_INSENSITIVE),
-				(m, l) -> new Token(new JSONValue<>(Boolean.valueOf(m.group()), BOOLEAN), JSONValueType)));
+				(m, l) -> new Token(new JSONBoolean(Boolean.valueOf(m.group())), JSONValueType)));
 		lexer.addRule("Null", new Rule(Pattern.compile("null", Pattern.CASE_INSENSITIVE & Pattern.LITERAL),
 				(m, l) -> new Token(new JSONNull(), JSONValueType)));
 		lexer.addRule("Colon", new Rule(Pattern.compile(":", Pattern.LITERAL), (m, l) -> {
@@ -204,13 +215,17 @@ public class JSONSystem {
 	 * If the value is one of the basic types for JSON, it gets wrapped within the that type's container (including null).<br>
 	 * If it implements {@link JSONRepresentable}, this method calls {@link JSONRepresentable#toJSONObject()} and returns the
 	 * result.<br>
-	 * Otherwise, it wraps the value within a {@link JSONValue} with {@link JSONType#WRAPPED} as the type.
+	 * If the value is an instance of {@link JSONSerializable}, it wraps the value within a {@link JSONWrapped} object.
+	 * Otherwise, it throws an {@link UnsupportedOperationException}.
 	 * 
 	 * @param value
-	 *            the value to wrap
+	 *            the value to wrap, which must
 	 * @param <T>
 	 *            the container type (this is determined automatically if this method is used appropriately)
 	 * @return the wrapped value
+	 * @throws UnsupportedOperationException
+	 *             if the value is not part of JSON's default supported values and does not implement
+	 *             {@link JSONSerializable} or {@link JSONRepresentable}
 	 */
 	@SuppressWarnings("unchecked")
 	public static final <T extends JSONData<?>> T wrap(Object value) {
@@ -223,7 +238,7 @@ public class JSONSystem {
 		if (value instanceof String)
 			return (T) new JSONString((String) value);
 		if (value instanceof Boolean)
-			return (T) new JSONValue<>((Boolean) value, JSONType.BOOLEAN);
+			return (T) new JSONBoolean((Boolean) value);
 		if (value instanceof List)
 			return (T) JSONArray.wrap((List<?>) value);
 		if (value.getClass().isArray())
@@ -232,7 +247,7 @@ public class JSONSystem {
 			return (T) ((JSONRepresentable) value).toJSONObject();
 		if (value instanceof JSONSerializable)
 			return (T) new JSONWrapped<>((JSONSerializable) value);
-		throw new UnsupportedOperationException("Cannot wrap a value that is not part of JSON's supported values and does not implement JSONSerializable or JSONRepresentable");
+		throw new UnsupportedOperationException("Cannot wrap a value that is not part of JSON's defaul supported values and does not implement JSONSerializable or JSONRepresentable");
 	}
 	
 	/**
@@ -275,35 +290,42 @@ public class JSONSystem {
 	 * @param str
 	 *            the escaped {@link String} to unescape
 	 * @return the original (unescaped) form of <tt>str</tt>
+	 * @throws UnsupportedEncodingException
+	 *             if there is an invalid escape sequence in <tt>str</tt>
 	 * @see #escape(String)
 	 */
-	public static final String unescape(String str) {
+	public static final String unescape(String str) throws UnsupportedEncodingException {
 		StringBuilder sb = new StringBuilder(str.length());
-		char[] s = str.toCharArray();
-		int i = 0, lim = s.length - 1;
-		for (; i < lim; i++) {
-			if (s[i] == '\\') {
-				char c = s[++i];
-				if (c == 't')
-					sb.append('\t');
-				else if (c == 'b')
-					sb.append("\b");
-				else if (c == 'n')
-					sb.append("\n");
-				else if (c == 'r')
-					sb.append("\r");
-				else if (c == 'f')
-					sb.append("\f");
-				else if (c == '\'')
-					sb.append("'");
-				else if (c == '"')
-					sb.append("\"");
-				else if (c == '\\')
-					sb.append("\\");
-			}
-			else
-				sb.append(s[i]);
+		try {
+			char[] s = str.toCharArray();
+			for (int i = 0; i < s.length; i++)
+				if (s[i] == '\\') {
+					char c = s[++i];
+					if (c == 't')
+						sb.append('\t');
+					else if (c == 'b')
+						sb.append("\b");
+					else if (c == 'n')
+						sb.append("\n");
+					else if (c == 'r')
+						sb.append("\r");
+					else if (c == 'f')
+						sb.append("\f");
+					else if (c == '\'')
+						sb.append("'");
+					else if (c == '"')
+						sb.append("\"");
+					else if (c == '\\')
+						sb.append("\\");
+					else
+						throw new UnsupportedEncodingException("\\" + s[i] + " is not a valid escape sequence.");
+				}
+				else
+					sb.append(s[i]);
 		}
-		return sb.append(s[i]).toString().trim();
+		catch (ArrayIndexOutOfBoundsException e) {
+			throw new UnsupportedEncodingException("String cannot end with a \\");
+		}
+		return sb.toString().trim();
 	}
 }

@@ -4,25 +4,51 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<ArrayList<JSONData<?>>> {
+/**
+ * Represents a comma-separated list of items bracketed by '[' and ']' in JSON text.
+ * 
+ * @author Joshua Lipstone
+ */
+public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<JSONData<?>>> {
 	
+	/**
+	 * Constructs an empty JSON array.
+	 */
 	public JSONArray() {
 		super();
 	}
 	
+	/**
+	 * Constructs an empty {@link JSONArray} with the specified initial capacity.
+	 * 
+	 * @param initialCapacity
+	 *            the initial capacity of the {@link JSONArray}
+	 */
 	public JSONArray(int initialCapacity) {
 		super(initialCapacity);
 	}
 	
+	/**
+	 * Constructs a {@link JSONArray} with the elements in the given collection. Also serves as the copy constructor.
+	 * 
+	 * @param c
+	 *            the items to insert into the new {@link JSONArray}
+	 */
 	public JSONArray(Collection<? extends JSONData<?>> c) {
 		super(c);
 	}
 	
+	/**
+	 * @return the {@link JSONArray} as a {@link List}.
+	 */
 	@Override
-	public ArrayList<JSONData<?>> value() {
+	public List<JSONData<?>> value() {
 		return this;
 	}
 	
+	/**
+	 * @return {@link JSONType#ARRAY}
+	 */
 	@Override
 	public final JSONType type() {
 		return JSONType.ARRAY;
@@ -30,6 +56,8 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<ArrayL
 	
 	/**
 	 * Forwards to {@link #toJSONString()}
+	 * 
+	 * @see #toJSONString()
 	 */
 	@Override
 	public String toString() {
@@ -73,7 +101,14 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<ArrayL
 		return sb.append(get(i).toJSONString()).append(" ]");
 	}
 	
-	static final JSONArray wrap(List<?> list) {
-		return list.stream().collect(JSONArray::new, (li, e) -> li.add(e instanceof JSONData ? (JSONData<?>) e : JSONSystem.wrap((Object) e)), JSONArray::addAll);
+	/**
+	 * Wraps a {@link Collection} in a {@link JSONArray}
+	 * 
+	 * @param c
+	 *            the {@link Collection} to wrap
+	 * @return a {@link JSONArray} containing the elements in <tt>c</tt>
+	 */
+	static final JSONArray wrap(Collection<?> c) {
+		return c.stream().collect(JSONArray::new, (li, e) -> li.add(e instanceof JSONData ? (JSONData<?>) e : JSONSystem.wrap((Object) e)), JSONArray::addAll);
 	}
 }

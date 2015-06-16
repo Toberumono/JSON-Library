@@ -1,6 +1,13 @@
 package toberumono.json;
 
-public class JSONValue<T> implements JSONData<T> {
+/**
+ * The common root of most of the wrapper classes in this library.
+ * 
+ * @author Joshua Lipstone
+ * @param <T>
+ *            the type of the wrapped value
+ */
+abstract class JSONValue<T> implements JSONData<T> {
 	private final T value;
 	private final JSONType type;
 	
