@@ -35,12 +35,19 @@ import lipstone.joshua.lexer.Type;
 public class JSONSystem {
 	static final String LineSeparator = System.lineSeparator();
 	
-	public static final Function<String, Double> defaultReader = Double::new;
-	public static final Function<Double, String> defaultWriter = String::valueOf;
-	public static final Class<Double> defaultNumberType = Double.class;
-	private static Function<String, ? extends Object> reader = defaultReader;
-	private static Function<? extends Object, String> writer = defaultWriter;
-	private static Class<?> numberType = defaultNumberType;
+	public static final Function<String, ? extends Number> defaultReader = s -> {
+		try {
+			return Integer.parseInt(s);
+		}
+		catch (NumberFormatException e) {
+			return Double.parseDouble(s);
+		}
+	};
+	public static final Function<? extends Number, String> defaultWriter = Number::toString;
+	public static final Class<Number> defaultNumberType = Number.class;
+	private static Function<String, ? extends Number> reader = defaultReader;
+	private static Function<? extends Number, String> writer = defaultWriter;
+	private static Class<? extends Number> numberType = defaultNumberType;
 	
 	private static final Type JSONValueType = new Type("JSONValue");
 	private static final Type JSONArrayType = new Type("JSONArray");
@@ -48,12 +55,14 @@ public class JSONSystem {
 	private static final Type JSONKeyValuePairType = new Type("JSONKeyValuePair");
 	private static final Lexer lexer = new Lexer(false);
 	static {
-		String quotes = "\"\u301D\u301E", sign = "[\\+\\-]", basicNumber = "([1-9][0-9]*\\.?[0-9]*|0?\\.[0-9]+)", exp = basicNumber + "[eE]" + sign + basicNumber, infinity = "(" + exp + "|infinity)"; //To avoid copy-pasting
+		String quotes = "\"\u301D\u301E", sign = "[\\+\\-]", basicNumber = "([1-9][0-9]*(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity =
+				"(" + exp + "|infinity)"; //To avoid copy-pasting
 		lexer.ignore("Spaces", Pattern.compile("\\s+"));
 		lexer.addRule("String", new Rule(Pattern.compile("[" + quotes + "](([^" + quotes + "]|(?<=\\\\)[" + quotes + "])*?)[" + quotes + "]"),
 				(m, l) -> new Token(new JSONString(m.group(1)), JSONValueType)));
-		lexer.addRule("Number", new Rule(Pattern.compile("(" + sign + "?" + infinity + "(" + sign + "(i" + infinity + "|" + infinity + "i|i))?|" + sign + "?(i" + infinity + "|" + infinity + "i|i)(" + sign + infinity + ")?)", Pattern.CASE_INSENSITIVE),
-				(m, l) -> new Token(new JSONNumber<>(JSONSystem.reader.apply(m.group())), JSONValueType)));
+		lexer.addRule("Number",
+				new Rule(Pattern.compile("(" + sign + "?" + infinity + "(" + sign + "(i" + infinity + "|" + infinity + "i|i))?|" + sign + "?(i" + infinity + "|" + infinity + "i|i)(" + sign + infinity
+						+ ")?)", Pattern.CASE_INSENSITIVE), (m, l) -> new Token(new JSONNumber<>(JSONSystem.reader.apply(m.group())), JSONValueType)));
 		lexer.addRule("Boolean", new Rule(Pattern.compile("(true|false)", Pattern.CASE_INSENSITIVE),
 				(m, l) -> new Token(new JSONBoolean(Boolean.valueOf(m.group())), JSONValueType)));
 		lexer.addRule("Null", new Rule(Pattern.compile("null", Pattern.CASE_INSENSITIVE & Pattern.LITERAL),
@@ -99,7 +108,7 @@ public class JSONSystem {
 	 * @see #defaultReader
 	 * @see #defaultWriter
 	 */
-	public static final <T> void setNumberHandlers(Class<T> numberType, Function<String, T> reader, Function<T, String> writer) {
+	public static final <T extends Number> void setNumberHandlers(Class<T> numberType, Function<String, T> reader, Function<T, String> writer) {
 		JSONSystem.reader = (reader == null ? defaultReader : reader);
 		JSONSystem.writer = (writer == null ? defaultWriter : writer);
 		JSONSystem.numberType = numberType;

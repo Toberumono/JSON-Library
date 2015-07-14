@@ -7,9 +7,9 @@ import java.util.function.Function;
  * 
  * @author Joshua Lipstone
  * @param <T>
- *            the type being used to represent numbers
+ *            the type being used to represent numbers (must subclass {@link Number})
  */
-public class JSONNumber<T> extends JSONValue<T> {
+public class JSONNumber<T extends Number> extends JSONValue<T> {
 	
 	/**
 	 * Constructs a new {@link JSONNumber} that wraps the given <tt>value</tt>
@@ -24,6 +24,6 @@ public class JSONNumber<T> extends JSONValue<T> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public String toJSONString() {
-		return ((Function<Object, String>) JSONSystem.getWriter()).apply(value());
+		return ((Function<Number, String>) JSONSystem.getWriter()).apply(value());
 	}
 }
