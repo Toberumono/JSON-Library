@@ -57,7 +57,7 @@ public class JSONSystem {
 	private static boolean comments = true;
 	private static final Rule comment = new Rule(Pattern.compile("//[^" + LineSeparator + "]*?" + LineSeparator), (m, l) -> l.hasNext() ? l.getNextToken(true) : new Token());
 	static {
-		String quotes = "\"\u301D\u301E", sign = "[\\+\\-]", basicNumber = "([1-9][0-9]*(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity =
+		String quotes = "\"\u301D\u301E", sign = "[\\+\\-]", basicNumber = "([0-9]+(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity =
 				"(" + exp + "|infinity)"; //To avoid copy-pasting
 		lexer.ignore("Spaces", Pattern.compile("\\s+"));
 		lexer.addRule("String", new Rule(Pattern.compile("[" + quotes + "](([^" + quotes + "]|(?<=\\\\)[" + quotes + "])*?)[" + quotes + "]"),
