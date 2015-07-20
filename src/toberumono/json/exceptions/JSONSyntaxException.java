@@ -10,4 +10,8 @@ public class JSONSyntaxException extends JSONException {
 	public JSONSyntaxException(String message) {
 		super(message);
 	}
+
+	public JSONSyntaxException(Throwable t) {
+		super(t);
+	}
 }

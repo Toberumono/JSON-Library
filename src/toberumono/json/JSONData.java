@@ -45,9 +45,25 @@ public interface JSONData<T> extends JSONSerializable {
 	 * 
 	 * @return nicely formatted JSON
 	 * @see #toJSONString()
+	 * @see #toFormattedJSON(StringBuilder)
 	 */
 	public default String toFormattedJSON() {
-		return toFormattedJSON(new StringBuilder(), "").toString();
+		return toFormattedJSON(new StringBuilder()).toString();
+	}
+	
+	/**
+	 * This method serializes the encapsulated value into JSON like {@link #toJSONString()}; however, it also formats the
+	 * data for readability. This is a bit slower, and results in more dispersed text, so if speed and data size are a
+	 * concern, use {@link #toJSONString()} instead.
+	 * 
+	 * @param sb
+	 *            the {@link StringBuilder} in which to construct the formatted JSON text
+	 * @return nicely formatted JSON
+	 * @see #toJSONString()
+	 * @see #toFormattedJSON()
+	 */
+	public default String toFormattedJSON(StringBuilder sb) {
+		return toFormattedJSON(sb, "").toString();
 	}
 	
 	/**

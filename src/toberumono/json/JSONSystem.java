@@ -54,6 +54,8 @@ public class JSONSystem {
 	private static final Type JSONObjectType = new Type("JSONObject");
 	private static final Type JSONKeyValuePairType = new Type("JSONKeyValuePair");
 	private static final Lexer lexer = new Lexer(false);
+	private static boolean comments = true;
+	private static final Rule comment = new Rule(Pattern.compile("//[^" + LineSeparator + "]*?" + LineSeparator), (m, l) -> l.hasNext() ? l.getNextToken(true) : new Token());
 	static {
 		String quotes = "\"\u301D\u301E", sign = "[\\+\\-]", basicNumber = "([1-9][0-9]*(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity =
 				"(" + exp + "|infinity)"; //To avoid copy-pasting
@@ -72,8 +74,8 @@ public class JSONSystem {
 			String key = ((JSONData<String>) l.popPreviousToken().getCar()).value();
 			return new Token(new Pair<String, JSONData<?>>(key, (JSONData<?>) l.getNextToken(true).getCar()), JSONKeyValuePairType);
 		}));
-		lexer.addRule("Comma", new Rule(Pattern.compile(",", Pattern.LITERAL),
-				(m, l) -> l.getNextToken(true)));
+		lexer.addRule("Comma", new Rule(Pattern.compile(",", Pattern.LITERAL), (m, l) -> l.getNextToken(true)));
+		lexer.addRule("Comment", comment);
 		lexer.addDescender("Array", new Descender("[", "]", l -> {}, (m, l) -> {
 			JSONArray array = new JSONArray(m.length());
 			for (; !m.isNull(); m = m.getNextToken())
@@ -89,6 +91,60 @@ public class JSONSystem {
 			}
 			return new Token(object, JSONObjectType);
 		}));
+	}
+	
+	/**
+	 * Enable parsing comments in JSON text.<br>
+	 * Comments start with '//' and continue to the end of the line.
+	 * 
+	 * @see #disableComments()
+	 * @see #setComments(boolean)
+	 */
+	public static final void enableComments() {
+		if (!comments) {
+			lexer.addRule("Comment", comment);
+			comments = true;
+		}
+	}
+	
+	/**
+	 * Disable parsing comments in JSON text.<br>
+	 * Comments start with '//' and continue to the end of the line.
+	 * 
+	 * @see #enableComments()
+	 * @see #setComments(boolean)
+	 */
+	public static final void disableComments() {
+		if (comments) {
+			lexer.removeRule("Comment");
+			comments = false;
+		}
+	}
+	
+	/**
+	 * @return whether parsing of comments in JSON text is currently enabled
+	 */
+	public static final boolean areCommentsEnabled() {
+		return comments;
+	}
+	
+	/**
+	 * Set whether parsing comments in JSON files is be enabled.<br>
+	 * Comments start with '//' and continue to the end of the line.<br>
+	 * This method forwards to {@link #enableComments()} or {@link #disableComments()} depending on the value of
+	 * <tt>enabled</tt>.
+	 * 
+	 * @param enabled
+	 *            whether parsing of comments in JSON text should be enabled
+	 * @see #enableComments()
+	 * @see #disableComments()
+	 * @see #areCommentsEnabled()
+	 */
+	public static final void setComments(boolean enabled) {
+		if (enabled)
+			enableComments();
+		else
+			disableComments();
 	}
 	
 	/**
@@ -176,7 +232,7 @@ public class JSONSystem {
 			return (JSONData<?>) lexer.lex(json.trim()).getCar();
 		}
 		catch (Exception e) {
-			throw new JSONSyntaxException(e.getMessage());
+			throw new JSONSyntaxException(e);
 		}
 	}
 	
@@ -260,8 +316,8 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Converts all of the Java special characters ('\'[tbnrf'"\]) into their escaped form, mostly for printing
-	 * {@link String Strings} to files.
+	 * Converts all of the Java special characters (['tbnrf"\]) into their escaped form, mostly for printing {@link String
+	 * Strings} to files.
 	 * 
 	 * @param str
 	 *            the {@link String} to escape
