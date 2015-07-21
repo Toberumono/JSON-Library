@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import toberumono.customStructures.tuples.Pair;
+import toberumono.additional.structures.tuples.Pair;
 import toberumono.json.exceptions.JSONSyntaxException;
 import toberumono.lexer.DefaultIgnorePattern;
 import toberumono.lexer.Descender;

@@ -10,7 +10,7 @@
 	<property name="jar" value="../JSONLib.jar" />
 	<fileset id="libraries" dir="${libs}">
 		<include name="lexer.jar" />
-		<include name="CustomStructures.jar" />
+		<include name="AdditionalStructures.jar" />
 	</fileset>
 
 	<!--Files that should be excluded from the build go here-->

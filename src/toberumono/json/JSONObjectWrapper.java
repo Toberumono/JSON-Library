@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import toberumono.customStructures.collections.iterators.WrappedIterator;
+import toberumono.additional.structures.collections.iterators.WrappedIterator;
 
 /**
  * Wraps a JSONObject in order to internally unpack the {@link JSONData} into values of type <tt>T</tt>.<br>
