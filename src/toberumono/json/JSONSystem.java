@@ -13,12 +13,12 @@ import java.util.regex.Pattern;
 
 import toberumono.customStructures.tuples.Pair;
 import toberumono.json.exceptions.JSONSyntaxException;
-
-import lipstone.joshua.lexer.Descender;
-import lipstone.joshua.lexer.Lexer;
-import lipstone.joshua.lexer.Rule;
-import lipstone.joshua.lexer.Token;
-import lipstone.joshua.lexer.Type;
+import toberumono.lexer.DefaultIgnorePattern;
+import toberumono.lexer.Descender;
+import toberumono.lexer.Lexer;
+import toberumono.lexer.Rule;
+import toberumono.lexer.Token;
+import toberumono.lexer.Type;
 
 /**
  * Core class for this library. Contains methods to read from and write to JSON files as well as change the type used for
@@ -53,13 +53,12 @@ public class JSONSystem {
 	private static final Type JSONArrayType = new Type("JSONArray");
 	private static final Type JSONObjectType = new Type("JSONObject");
 	private static final Type JSONKeyValuePairType = new Type("JSONKeyValuePair");
-	private static final Lexer lexer = new Lexer(false);
+	private static final Lexer lexer = new Lexer(DefaultIgnorePattern.WHITESPACE);
 	private static boolean comments = true;
 	private static final Rule comment = new Rule(Pattern.compile("//[^" + LineSeparator + "]*?" + LineSeparator), (m, l) -> l.hasNext() ? l.getNextToken(true) : new Token());
 	static {
 		String quotes = "\"\u301D\u301E", sign = "[\\+\\-]", basicNumber = "([0-9]+(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity =
 				"(" + exp + "|infinity)"; //To avoid copy-pasting
-		lexer.ignore("Spaces", Pattern.compile("\\s+"));
 		lexer.addRule("String", new Rule(Pattern.compile("[" + quotes + "](([^" + quotes + "]|(?<=\\\\)[" + quotes + "])*?)[" + quotes + "]"),
 				(m, l) -> new Token(new JSONString(m.group(1)), JSONValueType)));
 		lexer.addRule("Number",
