@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create jar nolibs" name="Create Runnable Jar for Project JSON Library">
+<project default="create jar nolibs" name="Create Runnable Jar for Project JSON Library" xmlns:if="ant:if" xmlns:unless="ant:unless">
 	<!--this file was created by Eclipse Runnable JAR Export Wizard-->
 	<!--ANT 1.9.4 is required                                        -->
 
 	<property name="src" location="src" />
 	<property name="bin" location="bin" />
 	<property name="doc" value="doc" />
-	<property name="libs" location="../" />
-	<property name="jar" value="../JSONLib.jar" />
+	<property unless:set="libs" name="libs" value="../" />
+	<property name="libs" location="${libs}" />
+	<property unless:set="prefix" name="prefix" value="../" />
+	<property name="jar" location="${prefix}JSONLib.jar" />
 	<fileset id="libraries" dir="${libs}">
 		<include name="lexer.jar" />
 		<include name="AdditionalStructures.jar" />
