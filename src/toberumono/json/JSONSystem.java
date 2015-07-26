@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import toberumono.additional.structures.tuples.Pair;
 import toberumono.json.exceptions.JSONSyntaxException;
 import toberumono.lexer.DefaultIgnorePattern;
 import toberumono.lexer.Descender;
@@ -19,6 +18,7 @@ import toberumono.lexer.Lexer;
 import toberumono.lexer.Rule;
 import toberumono.lexer.Token;
 import toberumono.lexer.Type;
+import toberumono.structures.tuples.Pair;
 
 /**
  * Core class for this library. Contains methods to read from and write to JSON files as well as change the type used for
