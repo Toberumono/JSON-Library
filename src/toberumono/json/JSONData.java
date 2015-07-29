@@ -5,7 +5,7 @@ import toberumono.json.exceptions.JSONSerializationException;
 /**
  * Represents a single value that was read from a JSON String and can be serialized into one.
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  * @param <T>
  *            the type of the encapsulated value.
  */

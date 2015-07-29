@@ -3,7 +3,7 @@ package toberumono.json;
 /**
  * Represents the possible types that a JSON value can have in this library.
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  * @see JSONData#type()
  */
 public enum JSONType {

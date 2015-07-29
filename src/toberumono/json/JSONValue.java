@@ -3,7 +3,7 @@ package toberumono.json;
 /**
  * The common root of most of the wrapper classes in this library.
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  * @param <T>
  *            the type of the wrapped value
  */
@@ -32,7 +32,7 @@ abstract class JSONValue<T> implements JSONData<T> {
 	}
 	
 	/**
-	 * This method just forwards to {@link #value() value's} toString method.
+	 * This method just forwards to {@link JSONData#value() value's} toString method.
 	 * 
 	 * @return {@code value.toString()}
 	 */

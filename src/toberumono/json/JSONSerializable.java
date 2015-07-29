@@ -5,7 +5,7 @@ import toberumono.json.exceptions.JSONSerializationException;
 /**
  * Indicates that an object can be serialized into a JSON string.
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  */
 public interface JSONSerializable {
 	

@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Represents a comma-separated list of items bracketed by '[' and ']' in JSON text.
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  */
 public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<JSONData<?>>> {
 	

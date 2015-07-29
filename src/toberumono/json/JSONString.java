@@ -3,7 +3,7 @@ package toberumono.json;
 /**
  * Represents a {@link String} in JSON text.
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  */
 public class JSONString extends JSONValue<String> {
 	

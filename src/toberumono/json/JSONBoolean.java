@@ -3,7 +3,7 @@ package toberumono.json;
 /**
  * Represents a {@link Boolean} in JSON text.
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  */
 public class JSONBoolean extends JSONValue<Boolean> {
 	

@@ -3,7 +3,7 @@ package toberumono.json;
 /**
  * Indicates that an object can be represented as a {@link JSONObject}.
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  */
 public interface JSONRepresentable extends JSONSerializable {
 	

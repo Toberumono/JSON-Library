@@ -16,7 +16,7 @@ import toberumono.structures.collections.iterators.WrappedIterator;
  * <b>This implicitly assumes that <i>all</i> values in the original {@link JSONObject} are of type {@link JSONData
  * JSONData&lt;T&gt;}</b>
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  * @param <T>
  *            the type of values that the {@link JSONObject} contained
  */

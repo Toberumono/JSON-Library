@@ -3,7 +3,7 @@ package toberumono.json.exceptions;
 /**
  * Root class for exceptions thrown by this library.
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  */
 public class JSONException extends RuntimeException {
 	
@@ -14,8 +14,14 @@ public class JSONException extends RuntimeException {
 	JSONException(String message) {
 		super(message);
 	}
-
-	public JSONException(Throwable t) {
-		super(t);
+	
+	/**
+	 * Wraps the given {@link Throwable} in a {@link JSONException}
+	 * 
+	 * @param cause
+	 *            the {@link Throwable} to wrap
+	 */
+	public JSONException(Throwable cause) {
+		super(cause);
 	}
 }

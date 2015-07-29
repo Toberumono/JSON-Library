@@ -18,13 +18,14 @@ import toberumono.lexer.Lexer;
 import toberumono.lexer.Rule;
 import toberumono.lexer.Token;
 import toberumono.lexer.Type;
+import toberumono.lexer.errors.LexerException;
 import toberumono.structures.tuples.Pair;
 
 /**
  * Core class for this library. Contains methods to read from and write to JSON files as well as change the type used for
  * numbers when reading from and writing to JSON files.
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  * @see #loadJSON(Path)
  * @see #parseJSON(String)
  * @see #writeJSON(JSONData, Path)
@@ -35,6 +36,9 @@ import toberumono.structures.tuples.Pair;
 public class JSONSystem {
 	static final String LineSeparator = System.lineSeparator();
 	
+	/**
+	 * The default method by which the {@link JSONSystem} reads numbers from {@link String Strings}.
+	 */
 	public static final Function<String, ? extends Number> defaultReader = s -> {
 		try {
 			return Integer.parseInt(s);
@@ -43,7 +47,13 @@ public class JSONSystem {
 			return Double.parseDouble(s);
 		}
 	};
+	/**
+	 * The default method by which the {@link JSONSystem} writes numbers to {@link String Strings}.
+	 */
 	public static final Function<? extends Number, String> defaultWriter = Number::toString;
+	/**
+	 * The default type that the {@link JSONSystem} expects numbers to have ({@link Number}).
+	 */
 	public static final Class<Number> defaultNumberType = Number.class;
 	private static Function<String, ? extends Number> reader = defaultReader;
 	private static Function<? extends Number, String> writer = defaultWriter;
@@ -230,7 +240,7 @@ public class JSONSystem {
 		try {
 			return (JSONData<?>) lexer.lex(json.trim()).getCar();
 		}
-		catch (Exception e) {
+		catch (LexerException e) {
 			throw new JSONSyntaxException(e);
 		}
 	}

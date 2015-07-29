@@ -5,7 +5,7 @@ import java.util.function.Function;
 /**
  * Represents a number in JSON text.
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  * @param <T>
  *            the type being used to represent numbers (must subclass {@link Number})
  */

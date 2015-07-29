@@ -4,7 +4,7 @@ package toberumono.json;
  * Represents a value that is not part of the default JSON type set, but can be serialized to value JSON text (it implements
  * {@link JSONSerializable})
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  * @param <T>
  *            the type of value to wrap
  */

@@ -8,7 +8,7 @@ import static toberumono.json.JSONSystem.LineSeparator;
 /**
  * Represents a bracketed group of key-value pairs in a JSON file.
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  */
 public final class JSONObject extends HashMap<String, JSONData<?>> implements JSONData<HashMap<String, JSONData<?>>> {
 	

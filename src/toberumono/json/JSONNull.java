@@ -3,7 +3,7 @@ package toberumono.json;
 /**
  * Represents a <tt>null</tt> value in JSON text.
  * 
- * @author Joshua Lipstone
+ * @author Toberumono
  */
 public class JSONNull implements JSONData<Void> {
 	
