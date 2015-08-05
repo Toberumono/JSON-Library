@@ -9,7 +9,8 @@ import java.util.List;
  * 
  * @author Toberumono
  */
-public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<JSONData<?>>> {
+public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<JSONData<?>>>, ModifiableJSONData {
+	private boolean modified;
 	
 	/**
 	 * Constructs an empty JSON array.
@@ -36,6 +37,9 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	 */
 	public JSONArray(Collection<? extends JSONData<?>> c) {
 		super(c);
+		//We need to ensure that the modified flag is correctly set
+		modified = false;
+		isModified();
 	}
 	
 	/**
@@ -110,5 +114,27 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	 */
 	static final JSONArray wrap(Collection<?> c) {
 		return c.stream().collect(JSONArray::new, (li, e) -> li.add(e instanceof JSONData ? (JSONData<?>) e : JSONSystem.wrap((Object) e)), JSONArray::addAll);
+	}
+	
+	@Override
+	public boolean isModified() {
+		if (!modified) {
+			for (JSONData<?> value : this)
+				if (value instanceof ModifiableJSONData && ((ModifiableJSONData) value).isModified()) {
+					modified = true;
+					break;
+				}
+		}
+		return modified;
+	}
+	
+	@Override
+	public void clearModified() {
+		if (modified) {
+			modified = false;
+			for (JSONData<?> value : this)
+				if (value instanceof ModifiableJSONData && ((ModifiableJSONData) value).isModified())
+					((ModifiableJSONData) value).clearModified();
+		}
 	}
 }

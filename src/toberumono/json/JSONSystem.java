@@ -1,7 +1,6 @@
 package toberumono.json;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,8 +29,6 @@ import toberumono.structures.tuples.Pair;
  * @see #parseJSON(String)
  * @see #writeJSON(JSONData, Path)
  * @see #wrap(Object)
- * @see #escape(String)
- * @see #unescape(String)
  */
 public class JSONSystem {
 	static final String LineSeparator = System.lineSeparator();
@@ -238,7 +235,10 @@ public class JSONSystem {
 	 */
 	public static final JSONData<?> parseJSON(String json) {
 		try {
-			return (JSONData<?>) lexer.lex(json.trim()).getCar();
+			JSONData<?> out = (JSONData<?>) lexer.lex(json.trim()).getCar();
+			if (out instanceof ModifiableJSONData)
+				((ModifiableJSONData) out).clearModified();
+			return out;
 		}
 		catch (LexerException e) {
 			throw new JSONSyntaxException(e);
@@ -322,84 +322,5 @@ public class JSONSystem {
 		if (value instanceof JSONSerializable)
 			return (T) new JSONWrapped<>((JSONSerializable) value);
 		throw new UnsupportedOperationException("Cannot wrap a value that is not part of JSON's defaul supported values and does not implement JSONSerializable or JSONRepresentable");
-	}
-	
-	/**
-	 * Converts all of the Java special characters (['tbnrf"\]) into their escaped form, mostly for printing {@link String
-	 * Strings} to files.
-	 * 
-	 * @param str
-	 *            the {@link String} to escape
-	 * @return the escaped form of <tt>str</tt>
-	 * @see #unescape(String)
-	 */
-	public static final String escape(String str) {
-		StringBuilder sb = new StringBuilder(str.length());
-		str.chars().forEach(c -> {
-			if (c == '\t')
-				sb.append("\\t");
-				else if (c == '\b')
-					sb.append("\\b");
-				else if (c == '\n')
-					sb.append("\\n");
-				else if (c == '\r')
-					sb.append("\\r");
-				else if (c == '\f')
-					sb.append("\\f");
-				else if (c == '\'')
-					sb.append("\\'");
-				else if (c == '\"')
-					sb.append("\\\"");
-				else if (c == '\\')
-					sb.append("\\\\");
-				else
-					sb.append((char) c);
-			});
-		return sb.toString();
-	}
-	
-	/**
-	 * Unescapes an escaped {@link String} such that {@code str.equals(unescape(escape(str)))} returns true.
-	 * 
-	 * @param str
-	 *            the escaped {@link String} to unescape
-	 * @return the original (unescaped) form of <tt>str</tt>
-	 * @throws UnsupportedEncodingException
-	 *             if there is an invalid escape sequence in <tt>str</tt>
-	 * @see #escape(String)
-	 */
-	public static final String unescape(String str) throws UnsupportedEncodingException {
-		StringBuilder sb = new StringBuilder(str.length());
-		try {
-			char[] s = str.toCharArray();
-			for (int i = 0; i < s.length; i++)
-				if (s[i] == '\\') {
-					char c = s[++i];
-					if (c == 't')
-						sb.append('\t');
-					else if (c == 'b')
-						sb.append("\b");
-					else if (c == 'n')
-						sb.append("\n");
-					else if (c == 'r')
-						sb.append("\r");
-					else if (c == 'f')
-						sb.append("\f");
-					else if (c == '\'')
-						sb.append("'");
-					else if (c == '"')
-						sb.append("\"");
-					else if (c == '\\')
-						sb.append("\\");
-					else
-						throw new UnsupportedEncodingException("\\" + s[i] + " is not a valid escape sequence.");
-				}
-				else
-					sb.append(s[i]);
-		}
-		catch (ArrayIndexOutOfBoundsException e) {
-			throw new UnsupportedEncodingException("String cannot end with a \\");
-		}
-		return sb.toString().trim();
 	}
 }

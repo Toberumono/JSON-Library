@@ -10,7 +10,8 @@ import static toberumono.json.JSONSystem.LineSeparator;
  * 
  * @author Toberumono
  */
-public final class JSONObject extends TreeMap<String, JSONData<?>> implements JSONData<TreeMap<String, JSONData<?>>> {
+public final class JSONObject extends TreeMap<String, JSONData<?>>implements JSONData<TreeMap<String, JSONData<?>>>, ModifiableJSONData {
+	private boolean modified;
 	
 	/**
 	 * Constructs an empty {@link JSONObject}
@@ -28,6 +29,9 @@ public final class JSONObject extends TreeMap<String, JSONData<?>> implements JS
 	 */
 	public JSONObject(Map<String, JSONData<?>> m) {
 		super(m);
+		//We need to ensure that the modified flag is correctly set
+		modified = false;
+		isModified();
 	}
 	
 	@Override
@@ -58,13 +62,16 @@ public final class JSONObject extends TreeMap<String, JSONData<?>> implements JS
 	 * @see #put(String, JSONData)
 	 */
 	public JSONData<?> put(String key, Object value) {
-		return super.put(key, JSONSystem.wrap(value));
+		return put(key, JSONSystem.wrap(value));
 	}
 	
 	@Override
 	//This is just for JavaDoc's benefit.
 	public JSONData<?> put(String key, JSONData<?> value) {
-		return super.put(key, value);
+		JSONData<?> old = super.put(key, value);
+		if (old.value() != value.value())
+			modified = true;
+		return old;
 	}
 	
 	@Override
@@ -105,5 +112,27 @@ public final class JSONObject extends TreeMap<String, JSONData<?>> implements JS
 	 */
 	public <T> JSONObjectWrapper<T> wrap() {
 		return new JSONObjectWrapper<>(this);
+	}
+	
+	@Override
+	public boolean isModified() {
+		if (!modified) {
+			for (JSONData<?> value : values())
+				if (value instanceof ModifiableJSONData && ((ModifiableJSONData) value).isModified()) {
+					modified = true;
+					break;
+				}
+		}
+		return modified;
+	}
+	
+	@Override
+	public void clearModified() {
+		if (modified) {
+			modified = false;
+			for (JSONData<?> value : values())
+				if (value instanceof ModifiableJSONData && ((ModifiableJSONData) value).isModified())
+					((ModifiableJSONData) value).clearModified();
+		}
 	}
 }

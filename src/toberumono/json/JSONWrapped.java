@@ -1,5 +1,7 @@
 package toberumono.json;
 
+import toberumono.utils.general.Strings;
+
 /**
  * Represents a value that is not part of the default JSON type set, but can be serialized to value JSON text (it implements
  * {@link JSONSerializable})
@@ -22,6 +24,6 @@ public class JSONWrapped<T extends JSONSerializable> extends JSONValue<T> {
 	
 	@Override
 	public String toJSONString() {
-		return "\"" + JSONSystem.escape(value().toJSONString()) + "\"";
+		return "\"" + Strings.escape(value().toJSONString()) + "\"";
 	}
 }
