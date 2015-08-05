@@ -1,7 +1,7 @@
 package toberumono.json;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static toberumono.json.JSONSystem.LineSeparator;
 
@@ -10,7 +10,7 @@ import static toberumono.json.JSONSystem.LineSeparator;
  * 
  * @author Toberumono
  */
-public final class JSONObject extends HashMap<String, JSONData<?>> implements JSONData<HashMap<String, JSONData<?>>> {
+public final class JSONObject extends TreeMap<String, JSONData<?>> implements JSONData<TreeMap<String, JSONData<?>>> {
 	
 	/**
 	 * Constructs an empty {@link JSONObject}
@@ -31,7 +31,7 @@ public final class JSONObject extends HashMap<String, JSONData<?>> implements JS
 	}
 	
 	@Override
-	public HashMap<String, JSONData<?>> value() {
+	public TreeMap<String, JSONData<?>> value() {
 		return this;
 	}
 	
