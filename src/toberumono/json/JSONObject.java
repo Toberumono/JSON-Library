@@ -93,7 +93,7 @@ public final class JSONObject extends TreeMap<String, JSONData<?>>implements JSO
 		forEach((k, v) -> {
 			sb.append(LineSeparator).append(innerIndentation).append(JSONString.toJSONString(k)).append(" : ");
 			if (v instanceof JSONObject)
-				v.toFormattedJSON(sb.append(LineSeparator).append(innerIndentation + "\t"), innerIndentation + "\t").append(",");
+				v.toFormattedJSON(sb, innerIndentation).append(",");
 			else {
 				v.toFormattedJSON(sb, innerIndentation);
 				sb.append(",");
