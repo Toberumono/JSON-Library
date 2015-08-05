@@ -42,6 +42,7 @@
 		<!--Add the names of the libraries to be included here.-->
 		<include name="Lexer.jar" />
 		<include name="Structures.jar" />
+		<include name="Utils.jar" />
 	</patternset>
 
 	<patternset id="Build Excludes">
