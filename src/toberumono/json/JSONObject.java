@@ -69,7 +69,7 @@ public final class JSONObject extends TreeMap<String, JSONData<?>>implements JSO
 	//This is just for JavaDoc's benefit.
 	public JSONData<?> put(String key, JSONData<?> value) {
 		JSONData<?> old = super.put(key, value);
-		if (old.value() != value.value())
+		if (old == null ^ value == null || (old != null && old.equals(value.value())))
 			modified = true;
 		return old;
 	}

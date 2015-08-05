@@ -137,4 +137,84 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 					((ModifiableJSONData) value).clearModified();
 		}
 	}
+
+	@Override
+	public boolean add(JSONData<?> e) {
+		if (super.add(e)) {
+			modified = true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean remove(Object o) {
+		if (super.remove(o)) {
+			modified = true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean addAll(Collection<? extends JSONData<?>> c) {
+		if (super.addAll(c)) {
+			modified = true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean addAll(int index, Collection<? extends JSONData<?>> c) {
+		if (super.addAll(index, c)) {
+			modified = true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean removeAll(Collection<?> c) {
+		if (super.removeAll(c)) {
+			modified = true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean retainAll(Collection<?> c) {
+		if (super.retainAll(c)) {
+			modified = true;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void clear() {
+		modified = true;
+		super.clear();
+	}
+
+	@Override
+	public JSONData<?> set(int index, JSONData<?> element) {
+		JSONData<?> old = super.set(index, element);
+		if (old == null ^ element == null || (old != null && old.equals(element.value())))
+			modified = true;
+		return old;
+	}
+
+	@Override
+	public void add(int index, JSONData<?> element) {
+		modified = true;
+		super.add(index, element);
+	}
+
+	@Override
+	public JSONData<?> remove(int index) {
+		modified = true;
+		return super.remove(index);
+	}
 }
