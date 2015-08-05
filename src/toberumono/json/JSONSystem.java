@@ -321,6 +321,6 @@ public class JSONSystem {
 			return (T) ((JSONRepresentable) value).toJSONObject();
 		if (value instanceof JSONSerializable)
 			return (T) new JSONWrapped<>((JSONSerializable) value);
-		throw new UnsupportedOperationException("Cannot wrap a value that is not part of JSON's defaul supported values and does not implement JSONSerializable or JSONRepresentable");
+		throw new UnsupportedOperationException("Cannot wrap a value that is not part of JSON's default supported values and does not implement JSONSerializable or JSONRepresentable");
 	}
 }

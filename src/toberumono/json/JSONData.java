@@ -34,7 +34,7 @@ public interface JSONData<T> extends JSONSerializable {
 	@Override
 	public default String toJSONString() {
 		if (!(value() instanceof JSONSerializable))
-			throw new JSONSerializationException("Value does not implement JSONSerializable");
+			throw new JSONSerializationException("Value " + value() + " does not implement JSONSerializable");
 		return ((JSONSerializable) value()).toJSONString();
 	}
 	
