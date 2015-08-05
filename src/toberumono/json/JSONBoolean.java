@@ -16,4 +16,9 @@ public class JSONBoolean extends JSONValue<Boolean> {
 	JSONBoolean(Boolean value) {
 		super(value, JSONType.BOOLEAN);
 	}
+	
+	@Override
+	public String toJSONString() {
+		return value().toString();
+	}
 }
