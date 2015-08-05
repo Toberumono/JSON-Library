@@ -1,7 +1,7 @@
 package toberumono.json;
 
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.LinkedHashMap;
 
 import static toberumono.json.JSONSystem.LineSeparator;
 
@@ -10,7 +10,7 @@ import static toberumono.json.JSONSystem.LineSeparator;
  * 
  * @author Toberumono
  */
-public final class JSONObject extends TreeMap<String, JSONData<?>>implements JSONData<TreeMap<String, JSONData<?>>>, ModifiableJSONData {
+public final class JSONObject extends LinkedHashMap<String, JSONData<?>>implements JSONData<LinkedHashMap<String, JSONData<?>>>, ModifiableJSONData {
 	private boolean modified;
 	
 	/**
@@ -35,7 +35,7 @@ public final class JSONObject extends TreeMap<String, JSONData<?>>implements JSO
 	}
 	
 	@Override
-	public TreeMap<String, JSONData<?>> value() {
+	public LinkedHashMap<String, JSONData<?>> value() {
 		return this;
 	}
 	
