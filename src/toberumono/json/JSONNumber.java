@@ -17,7 +17,7 @@ public class JSONNumber<T extends Number> extends JSONValue<T> {
 	 * @param value
 	 *            the number of type <tt>T</tt> to wrap
 	 */
-	JSONNumber(T value) {
+	public JSONNumber(T value) {
 		super(value, JSONType.NUMBER);
 	}
 	

@@ -18,7 +18,7 @@ public class JSONWrapped<T extends JSONSerializable> extends JSONValue<T> {
 	 * @param value
 	 *            the value to wrap
 	 */
-	JSONWrapped(T value) {
+	public JSONWrapped(T value) {
 		super(value, JSONType.WRAPPED);
 	}
 	

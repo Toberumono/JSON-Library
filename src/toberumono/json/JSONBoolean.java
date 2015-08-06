@@ -13,7 +13,7 @@ public class JSONBoolean extends JSONValue<Boolean> {
 	 * @param value
 	 *            the {@link Boolean} to encapsulate
 	 */
-	JSONBoolean(Boolean value) {
+	public JSONBoolean(Boolean value) {
 		super(value, JSONType.BOOLEAN);
 	}
 	

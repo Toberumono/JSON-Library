@@ -15,7 +15,7 @@ public class JSONString extends JSONValue<String> {
 	 * @param value
 	 *            the {@link String} to encapsulate
 	 */
-	JSONString(String value) {
+	public JSONString(String value) {
 		super(value, JSONType.STRING);
 	}
 	
