@@ -1,8 +1,18 @@
 #A script to download the required libraries for this project from gitHub and then build it.
 #Author: Toberumono
 
+use_release=true
+if [ "$#" > 0 ] && [ "$1" == "use_latest" ]; then
+	use_release=false
+	shift
+fi
+
 clone_project() {
-	git clone "https://github.com/Toberumono/$1.git" "../$1"
+	if ( $use_release ); then
+		git clone -b "$(git ls-remote --tags https://github.com/Toberumono/$1.git | grep -o -E '([0-9]+\.)*[0-9]+$' | sort -g | tail -1)" --depth=1 "https://github.com/Toberumono/$1.git" . >/dev/null 2>/dev/null
+	else	
+		git clone "https://github.com/Toberumono/$1.git" "../$1"
+	fi
 }
 
 build_project() {
