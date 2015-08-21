@@ -24,6 +24,7 @@ build_project() {
 		ant
 	fi
 	cd "$stored"
+	rm -r "./$1"
 }
 
 clone_build_project() {
