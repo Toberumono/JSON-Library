@@ -40,4 +40,4 @@ clone_build_project "Lexer"
 clone_build_project "Structures"
 clone_build_project "Utils"
 
-ant #Yep.  That's the final step.
+ant "$@" #Yep.  That's the final step.
