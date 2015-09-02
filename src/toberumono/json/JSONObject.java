@@ -1,7 +1,7 @@
 package toberumono.json;
 
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static toberumono.json.JSONSystem.LineSeparator;
 
@@ -72,6 +72,13 @@ public final class JSONObject extends LinkedHashMap<String, JSONData<?>>implemen
 		if (old == null ^ value == null || (old != null && old.equals(value.value())))
 			modified = true;
 		return old;
+	}
+	
+	@Override
+	public JSONData<?> remove(Object key) {
+		if (super.containsKey(key))
+			modified = true;
+		return super.remove(key);
 	}
 	
 	@Override
