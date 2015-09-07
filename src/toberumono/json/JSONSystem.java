@@ -62,33 +62,33 @@ public class JSONSystem {
 	private static final Type JSONKeyValuePairType = new Type("JSONKeyValuePair");
 	private static final Lexer lexer = new Lexer(DefaultIgnorePattern.WHITESPACE);
 	private static boolean comments = true;
-	private static final Rule comment = new Rule(Pattern.compile("//[^" + LineSeparator + "]*?" + LineSeparator), (m, l) -> l.hasNext() ? l.getNextToken(true) : new Token());
+	private static final Rule comment = new Rule(Pattern.compile("//[^" + LineSeparator + "]*?" + LineSeparator), (l, s, m) -> s.hasNext() ? l.getNextToken(s, true) : new Token());
 	static {
 		String quotes = "\"\u301D\u301E", sign = "[\\+\\-]", basicNumber = "([0-9]+(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity =
 				"(" + exp + "|infinity)"; //To avoid copy-pasting
 		lexer.addRule("String", new Rule(Pattern.compile("[" + quotes + "](([^" + quotes + "]|(?<=\\\\)[" + quotes + "])*?)[" + quotes + "]"),
-				(m, l) -> new Token(new JSONString(m.group(1)), JSONValueType)));
+				(l, s, m) -> new Token(new JSONString(m.group(1)), JSONValueType)));
 		lexer.addRule("Number",
 				new Rule(Pattern.compile("(" + sign + "?" + infinity + "(" + sign + "(i" + infinity + "|" + infinity + "i|i))?|" + sign + "?(i" + infinity + "|" + infinity + "i|i)(" + sign + infinity
-						+ ")?)", Pattern.CASE_INSENSITIVE), (m, l) -> new Token(new JSONNumber<>(JSONSystem.reader.apply(m.group())), JSONValueType)));
+						+ ")?)", Pattern.CASE_INSENSITIVE), (l, s, m) -> new Token(new JSONNumber<>(JSONSystem.reader.apply(m.group())), JSONValueType)));
 		lexer.addRule("Boolean", new Rule(Pattern.compile("(true|false)", Pattern.CASE_INSENSITIVE),
-				(m, l) -> new Token(new JSONBoolean(Boolean.valueOf(m.group())), JSONValueType)));
+				(l, s, m) -> new Token(new JSONBoolean(Boolean.valueOf(m.group())), JSONValueType)));
 		lexer.addRule("Null", new Rule(Pattern.compile("null", Pattern.CASE_INSENSITIVE & Pattern.LITERAL),
-				(m, l) -> new Token(new JSONNull(), JSONValueType)));
-		lexer.addRule("Colon", new Rule(Pattern.compile(":", Pattern.LITERAL), (m, l) -> {
+				(l, s, m) -> new Token(new JSONNull(), JSONValueType)));
+		lexer.addRule("Colon", new Rule(Pattern.compile(":", Pattern.LITERAL), (l, s, m) -> {
 			@SuppressWarnings("unchecked")
-			String key = ((JSONData<String>) l.popPreviousToken().getCar()).value();
-			return new Token(new Pair<String, JSONData<?>>(key, (JSONData<?>) l.getNextToken(true).getCar()), JSONKeyValuePairType);
+			String key = ((JSONData<String>) s.popPreviousToken().getCar()).value();
+			return new Token(new Pair<String, JSONData<?>>(key, (JSONData<?>) l.getNextToken(s, true).getCar()), JSONKeyValuePairType);
 		}));
-		lexer.addRule("Comma", new Rule(Pattern.compile(",", Pattern.LITERAL), (m, l) -> l.getNextToken(true)));
+		lexer.addRule("Comma", new Rule(Pattern.compile(",", Pattern.LITERAL), (l, s, m) -> l.getNextToken(s, true)));
 		lexer.addRule("Comment", comment);
-		lexer.addDescender("Array", new Descender("[", "]", l -> {}, (m, l) -> {
+		lexer.addDescender("Array", new Descender("[", "]", (l, s) -> {}, (l, s, m) -> {
 			JSONArray array = new JSONArray(m.length());
 			for (; !m.isNull(); m = m.getNextToken())
 				array.add((JSONData<?>) m.getCar());
 			return new Token(array, JSONArrayType);
 		}));
-		lexer.addDescender("Object", new Descender("{", "}", l -> {}, (m, l) -> {
+		lexer.addDescender("Object", new Descender("{", "}", (l, s) -> {}, (l, s, m) -> {
 			JSONObject object = new JSONObject();
 			for (; !m.isNull(); m = m.getNextToken()) {
 				@SuppressWarnings("unchecked")

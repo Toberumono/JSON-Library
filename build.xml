@@ -47,6 +47,10 @@
 
 	<patternset id="Build Excludes">
 		<!--Add the names of files to exclude from the src directory here.-->
+	</patternset>
+
+	<patternset id="Debug">
+		<!--Add the names of debug classes that should be excluded from the packaged jar here.-->
 		<exclude name="testCases/**" />
 	</patternset>
 
@@ -54,6 +58,7 @@
 		<javadoc access="protected" author="true" destdir="${doc}" packagenames="*" source="1.8" splitindex="true" use="true" version="true">
 			<fileset dir="${src}">
 				<patternset refid="Build Excludes" />
+				<patternset refid="Debug" />
 			</fileset>
 			<classpath if:true="${use.libs}" refid="build.classpath" />
 		</javadoc>
@@ -104,7 +109,10 @@
 				<attribute if:true="${use.libs}" name="Class-Path" value="${manifest.classpath}" />
 				<attribute unless:true="${use.libs}" name="Class-Path" value="." />
 			</manifest>
-			<fileset dir="${bin}" />
+			<fileset dir="${bin}">
+				<patternset refid="Build Excludes" />
+				<patternset refid="Debug" />
+			</fileset>
 			<fileset if:true="${package.doc}" dir="." includes="${doc}/**" />
 			<fileset if:true="${package.src}" dir="${src}" />
 			<restrict if:true="${package.libs}">
