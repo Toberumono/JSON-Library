@@ -11,7 +11,8 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import toberumono.json.exceptions.JSONSyntaxException;
-import toberumono.lexer.DefaultIgnorePattern;
+import toberumono.lexer.CommentPatterns;
+import toberumono.lexer.DefaultIgnorePatterns;
 import toberumono.lexer.Descender;
 import toberumono.lexer.Lexer;
 import toberumono.lexer.Rule;
@@ -60,7 +61,7 @@ public class JSONSystem {
 	private static final Type JSONArrayType = new Type("JSONArray");
 	private static final Type JSONObjectType = new Type("JSONObject");
 	private static final Type JSONKeyValuePairType = new Type("JSONKeyValuePair");
-	private static final Lexer lexer = new Lexer(DefaultIgnorePattern.WHITESPACE, DefaultIgnorePattern.SINGLELINE_COMMENT);
+	private static final Lexer lexer = new Lexer(DefaultIgnorePatterns.WHITESPACE, CommentPatterns.SINGLE_LINE_COMMENT);
 	private static boolean comments = true;
 	static {
 		String quotes = "\"\u301D\u301E", sign = "[\\+\\-]", basicNumber = "([0-9]+(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity =
@@ -106,7 +107,7 @@ public class JSONSystem {
 	 */
 	public static final void enableComments() {
 		if (!comments) {
-			lexer.addIgnore(DefaultIgnorePattern.SINGLELINE_COMMENT);
+			lexer.addIgnore(CommentPatterns.SINGLE_LINE_COMMENT);
 			comments = true;
 		}
 	}
@@ -120,7 +121,7 @@ public class JSONSystem {
 	 */
 	public static final void disableComments() {
 		if (comments) {
-			lexer.removeIgnore(DefaultIgnorePattern.SINGLELINE_COMMENT);
+			lexer.removeIgnore(CommentPatterns.SINGLE_LINE_COMMENT);
 			comments = false;
 		}
 	}
