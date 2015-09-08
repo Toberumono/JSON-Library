@@ -60,9 +60,8 @@ public class JSONSystem {
 	private static final Type JSONArrayType = new Type("JSONArray");
 	private static final Type JSONObjectType = new Type("JSONObject");
 	private static final Type JSONKeyValuePairType = new Type("JSONKeyValuePair");
-	private static final Lexer lexer = new Lexer(DefaultIgnorePattern.WHITESPACE);
+	private static final Lexer lexer = new Lexer(DefaultIgnorePattern.WHITESPACE, DefaultIgnorePattern.SINGLELINE_COMMENT);
 	private static boolean comments = true;
-	private static final Rule comment = new Rule(Pattern.compile("//[^" + LineSeparator + "]*?" + LineSeparator), (l, s, m) -> s.hasNext() ? l.getNextToken(s, true) : new Token());
 	static {
 		String quotes = "\"\u301D\u301E", sign = "[\\+\\-]", basicNumber = "([0-9]+(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity =
 				"(" + exp + "|infinity)"; //To avoid copy-pasting
@@ -81,7 +80,6 @@ public class JSONSystem {
 			return new Token(new Pair<String, JSONData<?>>(key, (JSONData<?>) l.getNextToken(s, true).getCar()), JSONKeyValuePairType);
 		}));
 		lexer.addRule("Comma", new Rule(Pattern.compile(",", Pattern.LITERAL), (l, s, m) -> l.getNextToken(s, true)));
-		lexer.addRule("Comment", comment);
 		lexer.addDescender("Array", new Descender("[", "]", (l, s) -> {}, (l, s, m) -> {
 			JSONArray array = new JSONArray(m.length());
 			for (; !m.isNull(); m = m.getNextToken())
@@ -108,7 +106,7 @@ public class JSONSystem {
 	 */
 	public static final void enableComments() {
 		if (!comments) {
-			lexer.addRule("Comment", comment);
+			lexer.addIgnore(DefaultIgnorePattern.SINGLELINE_COMMENT);
 			comments = true;
 		}
 	}
@@ -122,7 +120,7 @@ public class JSONSystem {
 	 */
 	public static final void disableComments() {
 		if (comments) {
-			lexer.removeRule("Comment");
+			lexer.removeIgnore(DefaultIgnorePattern.SINGLELINE_COMMENT);
 			comments = false;
 		}
 	}
