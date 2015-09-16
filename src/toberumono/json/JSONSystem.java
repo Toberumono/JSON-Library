@@ -11,14 +11,14 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import toberumono.json.exceptions.JSONSyntaxException;
-import toberumono.lexer.CommentPatterns;
-import toberumono.lexer.DefaultIgnorePatterns;
 import toberumono.lexer.Descender;
 import toberumono.lexer.Lexer;
 import toberumono.lexer.Rule;
 import toberumono.lexer.Token;
 import toberumono.lexer.Type;
 import toberumono.lexer.errors.LexerException;
+import toberumono.lexer.util.CommentPatterns;
+import toberumono.lexer.util.DefaultIgnorePatterns;
 import toberumono.structures.tuples.Pair;
 
 /**
