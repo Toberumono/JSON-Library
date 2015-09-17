@@ -15,7 +15,7 @@ import toberumono.lexer.ConsCell;
 import toberumono.lexer.Descender;
 import toberumono.lexer.Lexer;
 import toberumono.lexer.Rule;
-import toberumono.lexer.Type;
+import toberumono.lexer.ConsType;
 import toberumono.lexer.errors.LexerException;
 import toberumono.lexer.util.CommentPatterns;
 import toberumono.lexer.util.DefaultIgnorePatterns;
@@ -57,10 +57,10 @@ public class JSONSystem {
 	private static Function<? extends Number, String> writer = defaultWriter;
 	private static Class<? extends Number> numberType = defaultNumberType;
 	
-	private static final Type JSONValueType = new Type("JSONValue");
-	private static final Type JSONArrayType = new Type("JSONArray");
-	private static final Type JSONObjectType = new Type("JSONObject");
-	private static final Type JSONKeyValuePairType = new Type("JSONKeyValuePair");
+	private static final ConsType JSONValueType = new ConsType("JSONValue");
+	private static final ConsType JSONArrayType = new ConsType("JSONArray");
+	private static final ConsType JSONObjectType = new ConsType("JSONObject");
+	private static final ConsType JSONKeyValuePairType = new ConsType("JSONKeyValuePair");
 	private static final Lexer lexer = new Lexer(DefaultIgnorePatterns.WHITESPACE, CommentPatterns.SINGLE_LINE_COMMENT);
 	private static boolean comments = true;
 	static {
