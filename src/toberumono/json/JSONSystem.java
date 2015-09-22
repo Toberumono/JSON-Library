@@ -81,13 +81,13 @@ public class JSONSystem {
 			return new ConsCell(new Pair<String, JSONData<?>>(key, (JSONData<?>) l.getNextConsCell(s, true).getCar()), JSONKeyValuePairType);
 		}));
 		lexer.addRule("Comma", new Rule(Pattern.compile(",", Pattern.LITERAL), (l, s, m) -> l.getNextConsCell(s, true)));
-		lexer.addDescender("Array", new Descender("[", "]", (l, s) -> {}, (l, s, m) -> {
+		lexer.addDescender("Array", new Descender("[", "]", (l, s, m) -> {
 			JSONArray array = new JSONArray(m.length());
 			for (; !m.isNull(); m = m.getNextConsCell())
 				array.add((JSONData<?>) m.getCar());
 			return new ConsCell(array, JSONArrayType);
 		}));
-		lexer.addDescender("Object", new Descender("{", "}", (l, s) -> {}, (l, s, m) -> {
+		lexer.addDescender("Object", new Descender("{", "}", (l, s, m) -> {
 			JSONObject object = new JSONObject();
 			for (; !m.isNull(); m = m.getNextConsCell()) {
 				@SuppressWarnings("unchecked")
