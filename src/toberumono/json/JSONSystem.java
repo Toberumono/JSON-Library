@@ -1,6 +1,7 @@
 package toberumono.json;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,6 +21,7 @@ import toberumono.lexer.util.DefaultIgnorePatterns;
 import toberumono.structures.sexpressions.ConsCell;
 import toberumono.structures.sexpressions.ConsType;
 import toberumono.structures.tuples.Pair;
+import toberumono.utils.general.Strings;
 
 /**
  * Core class for this library. Contains methods to read from and write to JSON files as well as change the type used for
@@ -67,7 +69,14 @@ public class JSONSystem {
 		String quotes = "\"\u301D\u301E", sign = "[\\+\\-]", basicNumber = "([0-9]+(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity =
 				"(" + exp + "|infinity)"; //To avoid copy-pasting
 		lexer.addRule("String", new Rule(Pattern.compile("[" + quotes + "](([^" + quotes + "]|(?<=\\\\)[" + quotes + "])*)[" + quotes + "]"),
-				(l, s, m) -> new ConsCell(new JSONString(m.group(1)), JSONValueType)));
+				(l, s, m) -> {
+					try {
+						return new ConsCell(new JSONString(Strings.unescape(m.group(1))), JSONValueType);
+					}
+					catch (UnsupportedEncodingException e) {
+						return new ConsCell(new JSONString(m.group(1)), JSONValueType);
+					}
+				}));
 		lexer.addRule("Number",
 				new Rule(Pattern.compile("(" + sign + "?" + infinity + "(" + sign + "(i" + infinity + "|" + infinity + "i|i))?|" + sign + "?(i" + infinity + "|" + infinity + "i|i)(" + sign + infinity
 						+ ")?)", Pattern.CASE_INSENSITIVE), (l, s, m) -> new ConsCell(new JSONNumber<>(JSONSystem.reader.apply(m.group())), JSONValueType)));
