@@ -70,39 +70,39 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	
 	@Override
 	public String toJSONString() {
-		String out = "[ ";
-		out += stream().reduce("", (a, b) -> a + " , " + b.toJSONString(), (a, b) -> a + " , " + b);
-		return out + " ]";
+		StringBuilder out = new StringBuilder("[ ");
+		for (JSONData<?> o : this)
+			out.append(o.toJSONString() + " , ");
+		if (out.length() > 2)
+			out = out.delete(out.length() - 3, out.length());
+		out.append(" ]");
+		return out.toString();
 	}
 	
 	@Override
 	public StringBuilder toFormattedJSON(final StringBuilder sb, final String indentation) {
 		if (size() == 0)
 			return sb.append("[ ]");
-		final String innerIndentation = indentation + "\t", mapIndentation = innerIndentation + "\t";
-		sb.append("[ ");
+		final String innerIndentation = indentation + "\t";
+		sb.append("[");
 		int i = 0;
 		JSONData<?> e = get(i);
 		for (; i < size() - 1; e = get(++i)) {
 			if (e.type() == JSONType.OBJECT || e.type() == JSONType.ARRAY) {
 				e = (JSONData<?>) e.value();
-				sb.deleteCharAt(sb.length() - 1); //Delete the excess space character
-				sb.append(JSONSystem.LineSeparator).append(mapIndentation);
-				get(i).toFormattedJSON(sb, mapIndentation);
-				sb.append(",").append(JSONSystem.LineSeparator).append(mapIndentation);
-				if (get(i + 1).type() == JSONType.OBJECT || get(i + 1).type() == JSONType.ARRAY)
-					sb.append(" ");
+				sb.append(JSONSystem.LineSeparator).append(innerIndentation);
+				e.toFormattedJSON(sb, innerIndentation);
+				sb.append(",");
 			}
 			else
-				sb.append(get(i).toJSONString()).append(", ");
+				sb.append(" ").append(get(i).toJSONString()).append(",");
 		}
 		if (e.type() == JSONType.OBJECT || e.type() == JSONType.ARRAY) {
-			sb.deleteCharAt(sb.length() - 1); //Delete the excess space character
-			sb.append(JSONSystem.LineSeparator).append(mapIndentation);
-			get(i).toFormattedJSON(sb, mapIndentation);
-			return sb.append(JSONSystem.LineSeparator).append(innerIndentation).append("]");
+			sb.append(JSONSystem.LineSeparator).append(innerIndentation);
+			e.toFormattedJSON(sb, innerIndentation);
+			return sb.append(JSONSystem.LineSeparator).append(indentation).append("]");
 		}
-		return sb.append(get(i).toJSONString()).append(" ]");
+		return sb.append(" ").append(get(i).toJSONString()).append(" ]");
 	}
 	
 	/**
