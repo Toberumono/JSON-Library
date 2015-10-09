@@ -1,9 +1,11 @@
 package toberumono.json;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
+import java.io.Writer;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -272,7 +274,7 @@ public class JSONSystem {
 	/**
 	 * Writes the JSON data to the file at <tt>path</tt> if the file does not exist, it is created. If the file already
 	 * exists, it is overwritten.<br>
-	 * Convenience method for {@link #writeJSON(JSONData, Path, boolean)} with <tt>formatting</tt> set to true
+	 * Convenience method for {@link #writeJSON(JSONData, Path, boolean)} with <tt>formatting</tt> set to true.
 	 * 
 	 * @param root
 	 *            the root node of the JSON data
@@ -281,6 +283,7 @@ public class JSONSystem {
 	 * @throws IOException
 	 *             if there is an error while writing to the file
 	 * @see JSONData#toFormattedJSON()
+	 * @see #writeJSON(JSONData, Path, boolean)
 	 */
 	public static final void writeJSON(JSONData<?> root, Path path) throws IOException {
 		writeJSON(root, path, true);
@@ -288,7 +291,11 @@ public class JSONSystem {
 	
 	/**
 	 * Writes the JSON data to the file at <tt>path</tt> if the file does not exist, it is created. If the file already
-	 * exists, it is overwritten.
+	 * exists, it is overwritten.<br>
+	 * This simply creates a new {@link BufferedWriter} via {@link Files#newBufferedWriter(Path, OpenOption...)} without any
+	 * arguments for the {@link OpenOption} parameter and forwards to {@link #writeJSON(JSONData, Writer, boolean)}.<br>
+	 * <b>Note</b>: For consistency with previous versions (and general good formatting), it prints a terminating newline
+	 * after calling {@link #writeJSON(JSONData, Writer, boolean)} if formatting is enabled.
 	 * 
 	 * @param root
 	 *            the root node of the JSON data
@@ -301,11 +308,51 @@ public class JSONSystem {
 	 *             if there is an error while writing to the file
 	 * @see JSONData#toFormattedJSON()
 	 * @see #writeJSON(JSONData, Path)
+	 * @see #writeJSON(JSONData, Writer, boolean)
 	 */
 	public static final void writeJSON(JSONData<?> root, Path path, boolean formatting) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		sb = formatting ? root.toFormattedJSON(sb, "") : sb.append(root.toJSONString());
-		Files.write(path, Arrays.asList(sb.toString().split(System.lineSeparator())), Charset.defaultCharset()); //The default open options work here
+		try (Writer w = Files.newBufferedWriter(path)) {
+			writeJSON(root, w, formatting);
+			if (formatting)
+				w.write(System.lineSeparator()); //This is to keep a terminating newline
+		}
+	}
+	
+	/**
+	 * Writes the JSON data in text form to the given {@link Writer}.<br>
+	 * Convenience method for {@link #writeJSON(JSONData, Writer, boolean)} with <tt>formatting</tt> set to true.
+	 * 
+	 * @param root
+	 *            the root node of the JSON data
+	 * @param writer
+	 *            the {@link Writer} to which to write
+	 * @throws IOException
+	 *             if there is an error while writing to the file
+	 * @see JSONData#toFormattedJSON()
+	 * @see #writeJSON(JSONData, Writer, boolean)
+	 */
+	public static final void writeJSON(JSONData<?> root, Writer writer) throws IOException {
+		writeJSON(root, writer, true);
+	}
+	
+	/**
+	 * Writes the JSON data in text form to the given {@link Writer}.
+	 * 
+	 * @param root
+	 *            the root node of the JSON data
+	 * @param writer
+	 *            the {@link Writer} to which to write
+	 * @param formatting
+	 *            if true, then the nicer formatting is used. The speed penalty is minor, so this should almost always be
+	 *            true
+	 * @throws IOException
+	 *             if there is an error while writing to the file
+	 * @see JSONData#toFormattedJSON()
+	 * @see #writeJSON(JSONData, Writer)
+	 * @see #writeJSON(JSONData, Path, boolean)
+	 */
+	public static final void writeJSON(JSONData<?> root, Writer writer, boolean formatting) throws IOException {
+		writer.write(formatting ? root.toFormattedJSON() : root.toJSONString());
 	}
 	
 	/**
