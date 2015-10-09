@@ -22,10 +22,8 @@ public class JSONTester {
 	 *             if an I/O error occurs
 	 */
 	public static void main(String[] args) throws IOException {
-		JSONData<?> o = JSONSystem.loadJSON(Paths.get("/Users/joshualipstone/Dropbox/workspace/lipstone.joshua.parser/data", "BasicPlugin.json"));
+		JSONData<?> o = JSONSystem.loadJSON(Paths.get("./", "test-data.json"));
 		System.out.println(o.toString());
-		JSONSystem.writeJSON(o, Paths.get("/Users/joshualipstone/Dropbox/workspace/lipstone.joshua.parser/data", "BasicPlugin.json"));
-		JSONData<?> t2 = JSONSystem.parseJSON("{\"aNumber\":5,\"bNumber\":77.0}");
-		System.out.println(t2.toString());
+		JSONSystem.writeJSON(o, Paths.get("./", "test-data.json"));
 	}
 }
