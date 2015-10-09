@@ -3,14 +3,12 @@ package toberumono.json;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static toberumono.json.JSONSystem.LineSeparator;
-
 /**
  * Represents a bracketed group of key-value pairs in a JSON file.
  * 
  * @author Toberumono
  */
-public final class JSONObject extends LinkedHashMap<String, JSONData<?>>implements JSONData<LinkedHashMap<String, JSONData<?>>>, ModifiableJSONData {
+public final class JSONObject extends LinkedHashMap<String, JSONData<?>> implements JSONData<LinkedHashMap<String, JSONData<?>>>, ModifiableJSONData {
 	private boolean modified;
 	
 	/**
@@ -87,18 +85,19 @@ public final class JSONObject extends LinkedHashMap<String, JSONData<?>>implemen
 			return "{ }";
 		final StringBuilder sb = new StringBuilder();
 		sb.append("{");
-		this.entrySet().stream().forEach(e -> sb.append(LineSeparator).append("\t").append(JSONString.toJSONString(e.getKey())).append(" : ").append(e.getValue().toJSONString()).append(","));
-		return sb.deleteCharAt(sb.length() - 1).append(LineSeparator).append("}").toString();
+		for (Map.Entry<String, JSONData<?>> e : this.entrySet())
+			sb.append(System.lineSeparator()).append(JSONString.toJSONString(e.getKey())).append(" : ").append(e.getValue().toJSONString()).append(",");
+		return sb.deleteCharAt(sb.length() - 1).append(System.lineSeparator()).append("}").toString();
 	}
 	
 	@Override
 	public StringBuilder toFormattedJSON(final StringBuilder sb, String indentation) {
 		if (size() == 0)
 			return sb.append("{ }");
-		String innerIndentation = indentation + "\t";
+		String innerIndentation = indentation + JSONSystem.getIndentation();
 		sb.append("{");
 		forEach((k, v) -> {
-			sb.append(LineSeparator).append(innerIndentation).append(JSONString.toJSONString(k)).append(" : ");
+			sb.append(System.lineSeparator()).append(innerIndentation).append(JSONString.toJSONString(k)).append(" : ");
 			if (v instanceof JSONObject)
 				v.toFormattedJSON(sb, innerIndentation).append(",");
 			else {
@@ -106,7 +105,7 @@ public final class JSONObject extends LinkedHashMap<String, JSONData<?>>implemen
 				sb.append(",");
 			}
 		});
-		return sb.deleteCharAt(sb.length() - 1).append(LineSeparator).append(indentation).append("}");
+		return sb.deleteCharAt(sb.length() - 1).append(System.lineSeparator()).append(indentation).append("}");
 	}
 	
 	/**

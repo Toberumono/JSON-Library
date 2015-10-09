@@ -23,7 +23,7 @@ public class JSONTester {
 	 */
 	public static void main(String[] args) throws IOException {
 		JSONData<?> o = JSONSystem.loadJSON(Paths.get("./", "test-data.json"));
-		System.out.println(o.toString());
+		System.out.println(o.toFormattedJSON());
 		JSONSystem.writeJSON(o, Paths.get("./", "test-data.json"));
 	}
 }

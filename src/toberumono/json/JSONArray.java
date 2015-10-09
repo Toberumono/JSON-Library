@@ -70,12 +70,12 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	
 	@Override
 	public String toJSONString() {
-		StringBuilder out = new StringBuilder("[ ");
+		StringBuilder out = new StringBuilder("[");
 		for (JSONData<?> o : this)
-			out.append(o.toJSONString() + " , ");
+			out.append(o.toJSONString() + ", ");
 		if (out.length() > 2)
-			out = out.delete(out.length() - 3, out.length());
-		out.append(" ]");
+			out = out.delete(out.length() - 2, out.length());
+		out.append("]");
 		return out.toString();
 	}
 	
@@ -83,14 +83,14 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	public StringBuilder toFormattedJSON(final StringBuilder sb, final String indentation) {
 		if (size() == 0)
 			return sb.append("[ ]");
-		final String innerIndentation = indentation + "\t";
+		final String innerIndentation = indentation + JSONSystem.getIndentation();
 		sb.append("[");
 		int i = 0;
 		JSONData<?> e = get(i);
 		for (; i < size() - 1; e = get(++i)) {
 			if (e.type() == JSONType.OBJECT || e.type() == JSONType.ARRAY) {
 				e = (JSONData<?>) e.value();
-				sb.append(JSONSystem.LineSeparator).append(innerIndentation);
+				sb.append(System.lineSeparator()).append(innerIndentation);
 				e.toFormattedJSON(sb, innerIndentation);
 				sb.append(",");
 			}
@@ -98,9 +98,9 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 				sb.append(" ").append(get(i).toJSONString()).append(",");
 		}
 		if (e.type() == JSONType.OBJECT || e.type() == JSONType.ARRAY) {
-			sb.append(JSONSystem.LineSeparator).append(innerIndentation);
+			sb.append(System.lineSeparator()).append(innerIndentation);
 			e.toFormattedJSON(sb, innerIndentation);
-			return sb.append(JSONSystem.LineSeparator).append(indentation).append("]");
+			return sb.append(System.lineSeparator()).append(indentation).append("]");
 		}
 		return sb.append(" ").append(get(i).toJSONString()).append(" ]");
 	}

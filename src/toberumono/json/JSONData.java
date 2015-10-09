@@ -23,8 +23,8 @@ public interface JSONData<T> extends JSONSerializable {
 	
 	/**
 	 * Attempts to serialize the encapsulated value into a JSON String.<br>
-	 * The JSON text output by this method, while syntactically accurate, is not particularly readable. Use
-	 * {@link #toFormattedJSON()} for more readable (but still valid) JSON text.
+	 * The JSON text output by this method, while syntactically accurate, is not guaranteed to be easily read or edited by
+	 * users. Use {@link #toFormattedJSON()} for text that users can interact with.
 	 * 
 	 * @throws JSONSerializationException
 	 *             if the encapsulated value does not implement {@link JSONSerializable} or an error occurs during
@@ -40,8 +40,8 @@ public interface JSONData<T> extends JSONSerializable {
 	
 	/**
 	 * This method serializes the encapsulated value into JSON like {@link #toJSONString()}; however, it also formats the
-	 * data for readability. This is a bit slower, and results in more dispersed text, so if speed and data size are a
-	 * concern, use {@link #toJSONString()} instead.
+	 * data so that it is easier for users to read. This is a bit slower, and results in more dispersed text, so if speed
+	 * and/or data size are a concern, use {@link #toJSONString()} instead.
 	 * 
 	 * @return nicely formatted JSON
 	 * @see #toJSONString()
@@ -53,8 +53,8 @@ public interface JSONData<T> extends JSONSerializable {
 	
 	/**
 	 * This method serializes the encapsulated value into JSON like {@link #toJSONString()}; however, it also formats the
-	 * data for readability. This is a bit slower, and results in more dispersed text, so if speed and data size are a
-	 * concern, use {@link #toJSONString()} instead.
+	 * data so that it is easier for users to read. This is a bit slower, and results in more dispersed text, so if speed
+	 * and/or data size are a concern, use {@link #toJSONString()} instead.
 	 * 
 	 * @param sb
 	 *            the {@link StringBuilder} in which to construct the formatted JSON text

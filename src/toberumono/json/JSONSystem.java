@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -34,7 +33,6 @@ import toberumono.utils.general.Strings;
  * @see #wrap(Object)
  */
 public class JSONSystem {
-	static final String LineSeparator = System.lineSeparator();
 	
 	/**
 	 * The default method by which the {@link JSONSystem} reads numbers from {@link String Strings}.
@@ -65,6 +63,8 @@ public class JSONSystem {
 	private static final ConsType JSONKeyValuePairType = new ConsType("JSONKeyValuePair");
 	private static final Lexer lexer = new Lexer(DefaultIgnorePatterns.WHITESPACE, CommentPatterns.SINGLE_LINE_COMMENT);
 	private static boolean comments = true;
+	private static String indentation = "  ";
+	
 	static {
 		String quotes = "\"\u301D\u301E", sign = "[\\+\\-]", basicNumber = "([0-9]+(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity =
 				"(" + exp + "|infinity)"; //To avoid copy-pasting
@@ -133,6 +133,22 @@ public class JSONSystem {
 			lexer.removeIgnore(CommentPatterns.SINGLE_LINE_COMMENT);
 			comments = false;
 		}
+	}
+	
+	/**
+	 * @return the {@link String} used to indent successive elements within a JSON structure
+	 * @see JSONData#toFormattedJSON()
+	 */
+	public static String getIndentation() {
+		return indentation;
+	}
+	
+	/**
+	 * @param indentation
+	 *            the {@link String} to use to indent successive elements within a JSON structure
+	 */
+	public static void setIndentation(String indentation) {
+		JSONSystem.indentation = indentation;
 	}
 	
 	/**
@@ -226,7 +242,7 @@ public class JSONSystem {
 	 */
 	public static final JSONData<?> loadJSON(Path path) throws IOException {
 		final StringBuilder sb = new StringBuilder();
-		Files.lines(path).forEach(s -> sb.append(s).append(LineSeparator));
+		Files.lines(path).forEach(s -> sb.append(s).append(System.lineSeparator()));
 		return parseJSON(sb.toString());
 	}
 	
@@ -289,12 +305,13 @@ public class JSONSystem {
 	public static final void writeJSON(JSONData<?> root, Path path, boolean formatting) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb = formatting ? root.toFormattedJSON(sb, "") : sb.append(root.toJSONString());
-		Files.write(path, Arrays.asList(sb.toString().split(LineSeparator)), Charset.defaultCharset(), StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+		Files.write(path, Arrays.asList(sb.toString().split(System.lineSeparator())), Charset.defaultCharset()); //The default open options work here
 	}
 	
 	/**
 	 * Attempts to wrap <tt>value</tt> within the appropriate container for this library.<br>
-	 * If the value is one of the basic types for JSON, it gets wrapped within the that type's container (including null).<br>
+	 * If the value is one of the basic types for JSON, it gets wrapped within the that type's container (including
+	 * {@code null}).<br>
 	 * If it implements {@link JSONRepresentable}, this method calls {@link JSONRepresentable#toJSONObject()} and returns the
 	 * result.<br>
 	 * If the value is an instance of {@link JSONSerializable}, it wraps the value within a {@link JSONWrapped} object.
