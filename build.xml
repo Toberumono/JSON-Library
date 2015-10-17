@@ -55,7 +55,7 @@
 
 	<patternset id="Debug">
 		<!--Add the names of debug classes that should be excluded from the packaged jar here.-->
-		<exclude name="testCases/**" />
+		<exclude name="**/testCases/**" />
 	</patternset>
 
 	<target name="javadoc">
