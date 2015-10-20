@@ -112,7 +112,7 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	 *            the {@link Collection} to wrap
 	 * @return a {@link JSONArray} containing the elements in <tt>c</tt>
 	 */
-	static final JSONArray wrap(Collection<?> c) {
+	public static final JSONArray wrap(Collection<?> c) {
 		return c.stream().collect(JSONArray::new, (li, e) -> li.add(e instanceof JSONData ? (JSONData<?>) e : JSONSystem.wrap((Object) e)), JSONArray::addAll);
 	}
 	
