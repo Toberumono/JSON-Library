@@ -3,6 +3,7 @@ package toberumono.json;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Represents a comma-separated list of items bracketed by '[' and ']' in JSON text.
@@ -59,7 +60,7 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	}
 	
 	/**
-	 * Forwards to {@link #toJSONString()}
+	 * Forwards to {@link #toJSONString()}.
 	 * 
 	 * @see #toJSONString()
 	 */
@@ -106,7 +107,7 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	}
 	
 	/**
-	 * Wraps a {@link Collection} in a {@link JSONArray}
+	 * Wraps a {@link Collection} in a {@link JSONArray}.
 	 * 
 	 * @param c
 	 *            the {@link Collection} to wrap
@@ -114,6 +115,19 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	 */
 	public static final JSONArray wrap(Collection<?> c) {
 		return c.stream().collect(JSONArray::new, (li, e) -> li.add(e instanceof JSONData ? (JSONData<?>) e : JSONSystem.wrap((Object) e)), JSONArray::addAll);
+	}
+	
+	/**
+	 * Converts the elements in a {@link Collection} in {@link JSONData} and wraps them in a {@link JSONArray}.
+	 * 
+	 * @param c
+	 *            the {@link Collection} to wrap
+	 * @param converter
+	 *            a {@link Function} that converts the elements in <tt>c</tt> into {@link JSONData}
+	 * @return a {@link JSONArray} containing the elements in <tt>c</tt>
+	 */
+	public static final <T> JSONArray wrap(Collection<T> c, Function<T, JSONData<?>> converter) {
+		return c.stream().collect(JSONArray::new, (li, e) -> li.add(converter.apply(e)), JSONArray::addAll);
 	}
 	
 	@Override
@@ -137,7 +151,7 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 					((ModifiableJSONData) value).clearModified();
 		}
 	}
-
+	
 	@Override
 	public boolean add(JSONData<?> e) {
 		if (super.add(e)) {
@@ -146,7 +160,7 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean remove(Object o) {
 		if (super.remove(o)) {
@@ -155,7 +169,7 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean addAll(Collection<? extends JSONData<?>> c) {
 		if (super.addAll(c)) {
@@ -164,7 +178,7 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean addAll(int index, Collection<? extends JSONData<?>> c) {
 		if (super.addAll(index, c)) {
@@ -173,7 +187,7 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean removeAll(Collection<?> c) {
 		if (super.removeAll(c)) {
@@ -182,7 +196,7 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean retainAll(Collection<?> c) {
 		if (super.retainAll(c)) {
@@ -191,13 +205,13 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 		}
 		return false;
 	}
-
+	
 	@Override
 	public void clear() {
 		modified = true;
 		super.clear();
 	}
-
+	
 	@Override
 	public JSONData<?> set(int index, JSONData<?> element) {
 		JSONData<?> old = super.set(index, element);
@@ -205,13 +219,13 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 			modified = true;
 		return old;
 	}
-
+	
 	@Override
 	public void add(int index, JSONData<?> element) {
 		modified = true;
 		super.add(index, element);
 	}
-
+	
 	@Override
 	public JSONData<?> remove(int index) {
 		modified = true;
