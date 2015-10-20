@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -385,8 +385,8 @@ public class JSONSystem {
 			return (T) new JSONString((String) value);
 		if (value instanceof Boolean)
 			return (T) new JSONBoolean((Boolean) value);
-		if (value instanceof List)
-			return (T) JSONArray.wrap((List<?>) value);
+		if (value instanceof Collection)
+			return (T) JSONArray.wrap((Collection<?>) value);
 		if (value.getClass().isArray())
 			return (T) JSONArray.wrap(Arrays.asList(value));
 		if (value instanceof JSONRepresentable)
