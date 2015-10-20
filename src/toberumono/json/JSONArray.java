@@ -124,6 +124,8 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	 *            the {@link Collection} to wrap
 	 * @param converter
 	 *            a {@link Function} that converts the elements in <tt>c</tt> into {@link JSONData}
+	 * @param <T>
+	 *            the type of the elements being wrapped
 	 * @return a {@link JSONArray} containing the elements in <tt>c</tt>
 	 */
 	public static final <T> JSONArray wrap(Collection<T> c, Function<T, JSONData<?>> converter) {
