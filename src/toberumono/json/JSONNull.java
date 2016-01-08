@@ -1,7 +1,7 @@
 package toberumono.json;
 
 /**
- * Represents a <tt>null</tt> value in JSON text.
+ * Represents a {@code null} value in JSON text.
  * 
  * @author Toberumono
  */

@@ -52,8 +52,8 @@ abstract class JSONValue<T> implements JSONData<T> {
 	}
 	
 	/**
-	 * If <tt>o</tt> is an instance of {@link JSONData}, then this method performs the equivalent of
-	 * {@code this.value().equals(o.value())} (requisite null checks eliminated for brevity). If o is <tt>null</tt> or is not
+	 * If {@code o} is an instance of {@link JSONData}, then this method performs the equivalent of
+	 * {@code this.value().equals(o.value())} (requisite null checks eliminated for brevity). If o is {@code null} or is not
 	 * an instance of {@link JSONData}, it performs the equivalent of {@code this.value().equals(o)}.
 	 */
 	@Override

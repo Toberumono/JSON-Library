@@ -8,7 +8,7 @@ package toberumono.json;
 public class JSONBoolean extends JSONValue<Boolean> {
 	
 	/**
-	 * Constructs a {@link JSONBoolean} that encapsulates <tt>value</tt>
+	 * Constructs a {@link JSONBoolean} that encapsulates {@code value}
 	 * 
 	 * @param value
 	 *            the {@link Boolean} to encapsulate

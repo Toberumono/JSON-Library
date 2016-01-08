@@ -19,7 +19,7 @@ public final class JSONObject extends LinkedHashMap<String, JSONData<?>> impleme
 	}
 	
 	/**
-	 * Constructs a new {@link JSONObject} with the key-value pairs specified in <tt>m</tt>. Also serves as the copy
+	 * Constructs a new {@link JSONObject} with the key-value pairs specified in {@code m}. Also serves as the copy
 	 * constructor.
 	 * 
 	 * @param m
@@ -48,7 +48,7 @@ public final class JSONObject extends LinkedHashMap<String, JSONData<?>> impleme
 	}
 	
 	/**
-	 * This method calls {@link JSONSystem#wrap(Object)} with <tt>value</tt>, and assigns the result to <tt>key</tt> by
+	 * This method calls {@link JSONSystem#wrap(Object)} on {@code value}, and assigns the result to {@code key} by
 	 * forwarding to {@link #put(String, JSONData)}
 	 * 
 	 * @param key
@@ -109,7 +109,7 @@ public final class JSONObject extends LinkedHashMap<String, JSONData<?>> impleme
 	}
 	
 	/**
-	 * Wraps this {@link JSONObject} in a {@link JSONObjectWrapper} for type <tt>T</tt>.
+	 * Wraps this {@link JSONObject} in a {@link JSONObjectWrapper} for type {@code T}.
 	 * 
 	 * @param <T>
 	 *            determines the type that the {@link JSONObjectWrapper} will use. If this method is used correctly, this

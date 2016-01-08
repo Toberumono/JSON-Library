@@ -13,7 +13,7 @@ import toberumono.utils.general.Strings;
 public class JSONWrapped<T extends JSONSerializable> extends JSONValue<T> {
 	
 	/**
-	 * Constructs a new {@link JSONWrapped} that wraps the given <tt>value</tt>
+	 * Constructs a new {@link JSONWrapped} that wraps the given {@code value}
 	 * 
 	 * @param value
 	 *            the value to wrap

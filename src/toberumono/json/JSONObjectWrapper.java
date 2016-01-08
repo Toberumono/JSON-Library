@@ -12,7 +12,7 @@ import java.util.function.Function;
 import toberumono.structures.collections.iterators.WrappedIterator;
 
 /**
- * Wraps a JSONObject in order to internally unpack the {@link JSONData} into values of type <tt>T</tt>.<br>
+ * Wraps a JSONObject in order to internally unpack the {@link JSONData} into values of type {@code T}.<br>
  * <b>This implicitly assumes that <i>all</i> values in the original {@link JSONObject} are of type {@link JSONData
  * JSONData&lt;T&gt;}</b>
  * 

@@ -164,7 +164,7 @@ public class JSONSystem {
 	 * Set whether parsing comments in JSON files is be enabled.<br>
 	 * Comments start with '//' and continue to the end of the line.<br>
 	 * This method forwards to {@link #enableComments()} or {@link #disableComments()} depending on the value of
-	 * <tt>enabled</tt>.
+	 * {@code enabled}.
 	 * 
 	 * @param enabled
 	 *            whether parsing of comments in JSON text should be enabled
@@ -229,7 +229,7 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Reads the text from the file at <tt>path</tt> and then parses it as JSON text.
+	 * Reads the text from the file at {@code path} and then parses it as JSON text.
 	 * 
 	 * @param path
 	 *            the {@link Path} to the file to open
@@ -272,9 +272,9 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Writes the JSON data to the file at <tt>path</tt> if the file does not exist, it is created. If the file already
+	 * Writes the JSON data to the file at {@code path} if the file does not exist, it is created. If the file already
 	 * exists, it is overwritten.<br>
-	 * Convenience method for {@link #writeJSON(JSONData, Path, boolean)} with <tt>formatting</tt> set to true.
+	 * Convenience method for {@link #writeJSON(JSONData, Path, boolean)} with {@code formatting} set to true.
 	 * 
 	 * @param root
 	 *            the root node of the JSON data
@@ -290,7 +290,7 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Writes the JSON data to the file at <tt>path</tt> if the file does not exist, it is created. If the file already
+	 * Writes the JSON data to the file at {@code path} if the file does not exist, it is created. If the file already
 	 * exists, it is overwritten.<br>
 	 * This simply creates a new {@link BufferedWriter} via {@link Files#newBufferedWriter(Path, OpenOption...)} without any
 	 * arguments for the {@link OpenOption} parameter and forwards to {@link #writeJSON(JSONData, Writer, boolean)}.<br>
@@ -320,7 +320,7 @@ public class JSONSystem {
 	
 	/**
 	 * Writes the JSON data in text form to the given {@link Writer}.<br>
-	 * Convenience method for {@link #writeJSON(JSONData, Writer, boolean)} with <tt>formatting</tt> set to true.
+	 * Convenience method for {@link #writeJSON(JSONData, Writer, boolean)} with {@code formatting} set to true.
 	 * 
 	 * @param root
 	 *            the root node of the JSON data
@@ -356,7 +356,7 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Attempts to wrap <tt>value</tt> within the appropriate container for this library.<br>
+	 * Attempts to wrap {@code value} within the appropriate container for this library.<br>
 	 * If the value is one of the basic types for JSON, it gets wrapped within the that type's container (including
 	 * {@code null}).<br>
 	 * If it implements {@link JSONRepresentable}, this method calls {@link JSONRepresentable#toJSONObject()} and returns the

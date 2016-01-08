@@ -15,7 +15,7 @@ public class JSONSerializationException extends JSONException {
 	}
 	
 	/**
-	 * Creates a new {@link JSONSerializationException} with the given <tt>message</tt>.
+	 * Creates a new {@link JSONSerializationException} with the given {@code message}.
 	 * 
 	 * @param message
 	 *            the message to associate with the {@link JSONSerializationException}
