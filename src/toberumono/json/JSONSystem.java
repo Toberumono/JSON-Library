@@ -65,7 +65,7 @@ public class JSONSystem {
 	private static final ConsType JSONKeyValuePairType = new ConsType("JSONKeyValuePair");
 	private static final Lexer lexer = new Lexer(DefaultIgnorePatterns.WHITESPACE, CommentPatterns.SINGLE_LINE_COMMENT);
 	private static boolean comments = true;
-	private static String indentation = "  ";
+	private static String indentation = "\t";
 	
 	static {
 		String sign = "[\\+\\-]", basicNumber = "([0-9]+(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity = "(" + exp + "|infinity)"; //To avoid copy-pasting
