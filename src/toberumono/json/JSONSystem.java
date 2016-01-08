@@ -68,9 +68,8 @@ public class JSONSystem {
 	private static String indentation = "  ";
 	
 	static {
-		String quotes = "\"\u301D\u301E", sign = "[\\+\\-]", basicNumber = "([0-9]+(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity =
-				"(" + exp + "|infinity)"; //To avoid copy-pasting
-		lexer.addRule("String", new Rule(Pattern.compile("[" + quotes + "](([^" + quotes + "]|(?<=\\\\)[" + quotes + "])*)[" + quotes + "]"),
+		String sign = "[\\+\\-]", basicNumber = "([0-9]+(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity = "(" + exp + "|infinity)"; //To avoid copy-pasting
+		lexer.addRule("String", new Rule(Pattern.compile("[\"\u201C]((\\\\[tbnrf'\"\u201C\u201D\\\\]|[^\"\u201C\u201D\\\\])+?)[\"\u201D]"), //Supports straight quotes and Unicode left and right-quotes
 				(l, s, m) -> {
 					try {
 						return new ConsCell(new JSONString(Strings.unescape(m.group(1))), JSONValueType);
@@ -79,9 +78,10 @@ public class JSONSystem {
 						return new ConsCell(new JSONString(m.group(1)), JSONValueType);
 					}
 				}));
-		lexer.addRule("Number",
-				new Rule(Pattern.compile("(" + sign + "?" + infinity + "(" + sign + "(i" + infinity + "|" + infinity + "i|i))?|" + sign + "?(i" + infinity + "|" + infinity + "i|i)(" + sign + infinity
-						+ ")?)", Pattern.CASE_INSENSITIVE), (l, s, m) -> new ConsCell(new JSONNumber<>(JSONSystem.reader.apply(m.group())), JSONValueType)));
+		lexer.addRule("Number", new Rule(
+				Pattern.compile("(" + sign + "?" + infinity + "(" + sign + "(i" + infinity + "|" + infinity + "i|i))?|" + sign + "?(i" + infinity + "|" + infinity + "i|i)(" + sign + infinity + ")?)",
+						Pattern.CASE_INSENSITIVE),
+				(l, s, m) -> new ConsCell(new JSONNumber<>(JSONSystem.reader.apply(m.group())), JSONValueType)));
 		lexer.addRule("Boolean", new Rule(Pattern.compile("(true|false)", Pattern.CASE_INSENSITIVE),
 				(l, s, m) -> new ConsCell(new JSONBoolean(Boolean.valueOf(m.group())), JSONValueType)));
 		lexer.addRule("Null", new Rule(Pattern.compile("null", Pattern.CASE_INSENSITIVE & Pattern.LITERAL),
@@ -244,7 +244,9 @@ public class JSONSystem {
 	 */
 	public static final JSONData<?> loadJSON(Path path) throws IOException {
 		final StringBuilder sb = new StringBuilder();
-		Files.lines(path).forEach(s -> sb.append(s).append(System.lineSeparator()));
+		final String sep = System.lineSeparator();
+		for (String line : Files.readAllLines(path))
+			sb.append(line).append(sep);
 		return parseJSON(sb.toString());
 	}
 	
@@ -394,5 +396,51 @@ public class JSONSystem {
 		if (value instanceof JSONSerializable)
 			return (T) new JSONWrapped<>((JSONSerializable) value);
 		throw new UnsupportedOperationException("Cannot wrap a value that is not part of JSON's default supported values and does not implement JSONSerializable or JSONRepresentable");
+	}
+	
+	/**
+	 * A convenience method for simplifying the process of upgrading configuration files. If a field needs to be moved from
+	 * one location to another in a JSON file, this method will go through the list of locations in {@code containerChain}
+	 * and transfer the field into the last location in the chain. If the field is not found in any of the locations,
+	 * {@code defaultValue} is used.<br>
+	 * Example Usage:<br>
+	 * 
+	 * <pre>
+	 * {
+	 * 	&#64;code
+	 * 	JSONObject json = JSONSystem.loadJSON(path);
+	 * 	JSONString def = new JSONString("testing testing");
+	 * 	JSONObject oldSpot1 = json.get("oldSpot1"), oldSpot2 = json.get("oldSpot2"), newSpot = json.get("newSpot");
+	 * 	transferField("foo", def, oldSpot1, oldSpot2, newSpot);
+	 * }
+	 * </pre>
+	 * 
+	 * @param name
+	 *            the name of the field to be transferred
+	 * @param defaultValue
+	 *            the default value of the field
+	 * @param containerChain
+	 *            an array of {@link JSONObject JSONObjects} from oldest to newest wherein the field could be found
+	 */
+	public static void transferField(String name, JSONData<?> defaultValue, JSONObject... containerChain) {
+		if (containerChain.length == 0)
+			return;
+		if (containerChain.length == 1) {
+			if (!containerChain[0].containsKey(name))
+				containerChain[0].put(name, defaultValue);
+			return;
+		}
+		JSONData<?> value = null;
+		int lim = containerChain.length - 1;
+		for (int i = 0; i < lim; i++)
+			if (containerChain[i].containsKey(name))
+				value = containerChain[i].remove(name);
+		if (value == null)
+			value = defaultValue;
+		for (int i = 0, j = 1; j < containerChain.length; i++, j++)
+			if (!containerChain[j].containsKey(name))
+				containerChain[j].put(name, containerChain[i].containsKey(name) ? containerChain[i].remove(name) : defaultValue);
+			else if (containerChain[i].containsKey(name))
+				containerChain[i].remove(name);
 	}
 }
