@@ -4,7 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Represents a bracketed group of key-value pairs in a JSON file.
+ * Represents a bracketed group of key-value pairs in a JSON file.<br>
+ * This does not support {@code null} keys or values.
  * 
  * @author Toberumono
  */
@@ -64,19 +65,21 @@ public final class JSONObject extends LinkedHashMap<String, JSONData<?>> impleme
 	}
 	
 	@Override
-	//This is just for JavaDoc's benefit.
 	public JSONData<?> put(String key, JSONData<?> value) {
+		if (key == null || value == null)
+			throw new NullPointerException();
 		JSONData<?> old = super.put(key, value);
-		if (old == null ^ value == null || (old != null && old.equals(value.value())))
+		if (old == null ^ value == null || (old != null && !old.equals(value.value())))
 			modified = true;
 		return old;
 	}
 	
 	@Override
 	public JSONData<?> remove(Object key) {
-		if (super.containsKey(key))
-			modified = true;
-		return super.remove(key);
+		JSONData<?> out = super.remove(key);
+		if (!modified)
+			modified = out != null;
+		return out;
 	}
 	
 	@Override
@@ -122,23 +125,23 @@ public final class JSONObject extends LinkedHashMap<String, JSONData<?>> impleme
 	
 	@Override
 	public boolean isModified() {
-		if (!modified) {
-			for (JSONData<?> value : values())
-				if (value instanceof ModifiableJSONData && ((ModifiableJSONData) value).isModified()) {
-					modified = true;
-					break;
-				}
-		}
+		if (modified)
+			return modified;
+		for (JSONData<?> value : values())
+			if (value instanceof ModifiableJSONData && ((ModifiableJSONData) value).isModified()) {
+				modified = true;
+				break;
+			}
 		return modified;
 	}
 	
 	@Override
 	public void clearModified() {
-		if (modified) {
-			modified = false;
-			for (JSONData<?> value : values())
-				if (value instanceof ModifiableJSONData && ((ModifiableJSONData) value).isModified())
-					((ModifiableJSONData) value).clearModified();
-		}
+		if (!modified)
+			return;
+		modified = false;
+		for (JSONData<?> value : values())
+			if (value instanceof ModifiableJSONData && ((ModifiableJSONData) value).isModified())
+				((ModifiableJSONData) value).clearModified();
 	}
 }
