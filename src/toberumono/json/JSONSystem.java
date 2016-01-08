@@ -437,10 +437,6 @@ public class JSONSystem {
 				value = containerChain[i].remove(name);
 		if (value == null)
 			value = defaultValue;
-		for (int i = 0, j = 1; j < containerChain.length; i++, j++)
-			if (!containerChain[j].containsKey(name))
-				containerChain[j].put(name, containerChain[i].containsKey(name) ? containerChain[i].remove(name) : defaultValue);
-			else if (containerChain[i].containsKey(name))
-				containerChain[i].remove(name);
+		containerChain[lim].put(name, value);
 	}
 }
