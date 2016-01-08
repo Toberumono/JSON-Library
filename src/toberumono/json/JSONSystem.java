@@ -69,7 +69,7 @@ public class JSONSystem {
 	
 	static {
 		String sign = "[\\+\\-]", basicNumber = "([0-9]+(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity = "(" + exp + "|infinity)"; //To avoid copy-pasting
-		lexer.addRule("String", new Rule(Pattern.compile("[\"\u201C]((\\\\[tbnrf'\"\u201C\u201D\\\\]|[^\"\u201C\u201D\\\\])+?)[\"\u201D]"), //Supports straight quotes and Unicode left and right-quotes
+		lexer.addRule("String", new Rule(Pattern.compile("[\"\u201C]((\\\\[tbnrf'\"\u201C\u201D\\\\]|[^\"\u201C\u201D\\\\])*?)[\"\u201D]"), //Supports straight quotes and Unicode left and right-quotes
 				(l, s, m) -> {
 					try {
 						return new ConsCell(new JSONString(Strings.unescape(m.group(1))), JSONValueType);
