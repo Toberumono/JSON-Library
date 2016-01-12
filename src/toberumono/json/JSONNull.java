@@ -27,4 +27,9 @@ public class JSONNull implements JSONData<Void> {
 	public JSONType type() {
 		return JSONType.NULL;
 	}
+	
+	@Override
+	public String toString() {
+		return "null";
+	}
 }
