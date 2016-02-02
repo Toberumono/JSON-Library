@@ -1,6 +1,7 @@
 package toberumono.json;
 
 import java.io.BufferedWriter;
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -303,9 +304,9 @@ public class JSONSystem {
 	 * Writes the JSON data to the file at {@code path} if the file does not exist, it is created. If the file already
 	 * exists, it is overwritten.<br>
 	 * This simply creates a new {@link BufferedWriter} via {@link Files#newBufferedWriter(Path, OpenOption...)} without any
-	 * arguments for the {@link OpenOption} parameter and forwards to {@link #writeJSON(JSONData, Writer, boolean)}.<br>
+	 * arguments for the {@link OpenOption} parameter and forwards to {@link #writeJSON(JSONData, Appendable, boolean)}.<br>
 	 * <b>Note</b>: For consistency with previous versions (and general good formatting), it prints a terminating newline
-	 * after calling {@link #writeJSON(JSONData, Writer, boolean)} if formatting is enabled.
+	 * after calling {@link #writeJSON(JSONData, Appendable, boolean)} if formatting is enabled.
 	 * 
 	 * @param root
 	 *            the root node of the JSON data
@@ -318,7 +319,7 @@ public class JSONSystem {
 	 *             if there is an error while writing to the file
 	 * @see JSONData#toFormattedJSON()
 	 * @see #writeJSON(JSONData, Path)
-	 * @see #writeJSON(JSONData, Writer, boolean)
+	 * @see #writeJSON(JSONData, Appendable, boolean)
 	 */
 	public static final void writeJSON(JSONData<?> root, Path path, boolean formatting) throws IOException {
 		try (Writer w = Files.newBufferedWriter(path)) {
@@ -330,7 +331,7 @@ public class JSONSystem {
 	
 	/**
 	 * Writes the JSON data in text form to the given {@link Writer}.<br>
-	 * Convenience method for {@link #writeJSON(JSONData, Writer, boolean)} with {@code formatting} set to true.
+	 * Convenience method for {@link #writeJSON(JSONData, Appendable, boolean)} with {@code formatting} set to true.
 	 * 
 	 * @param root
 	 *            the root node of the JSON data
@@ -339,9 +340,9 @@ public class JSONSystem {
 	 * @throws IOException
 	 *             if there is an error while writing to the file
 	 * @see JSONData#toFormattedJSON()
-	 * @see #writeJSON(JSONData, Writer, boolean)
+	 * @see #writeJSON(JSONData, Appendable, boolean)
 	 */
-	public static final void writeJSON(JSONData<?> root, Writer writer) throws IOException {
+	public static final void writeJSON(JSONData<?> root, Appendable writer) throws IOException {
 		writeJSON(root, writer, true);
 	}
 	
@@ -358,11 +359,13 @@ public class JSONSystem {
 	 * @throws IOException
 	 *             if there is an error while writing to the file
 	 * @see JSONData#toFormattedJSON()
-	 * @see #writeJSON(JSONData, Writer)
+	 * @see #writeJSON(JSONData, Appendable)
 	 * @see #writeJSON(JSONData, Path, boolean)
 	 */
-	public static final void writeJSON(JSONData<?> root, Writer writer, boolean formatting) throws IOException {
-		writer.write(formatting ? root.toFormattedJSON() : root.toJSONString());
+	public static final void writeJSON(JSONData<?> root, Appendable writer, boolean formatting) throws IOException {
+		writer.append(formatting ? root.toFormattedJSON() : root.toJSONString());
+		if (writer instanceof Flushable) //Handles Writers
+			((Flushable) writer).flush();
 	}
 	
 	/**
