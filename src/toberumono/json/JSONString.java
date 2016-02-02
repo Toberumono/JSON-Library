@@ -1,7 +1,5 @@
 package toberumono.json;
 
-import toberumono.utils.general.Strings;
-
 /**
  * Represents a {@link String} in JSON text.
  * 
@@ -26,13 +24,32 @@ public class JSONString extends JSONValue<String> {
 	
 	/**
 	 * Converts a {@link String} into a value that can be written to a JSON file.<br>
-	 * This just escapes {@code str} through a call to {@link Strings#escape(String)} and encloses the result in '"'s.
+	 * This just escapes {@code str} to match the proper JSON format and encloses the result in '"'s.
 	 * 
 	 * @param str
 	 *            the {@link String} to convert to a valid JSON string.
 	 * @return {@code str} in a form that can be written to a valid JSON file
 	 */
 	public static String toJSONString(String str) {
-		return "\"" + Strings.escape(str) + "\"";
+		StringBuilder sb = new StringBuilder(str.length());
+		str.chars().forEach(c -> {
+			if (c == '\t')
+				sb.append("\\t");
+			else if (c == '\b')
+				sb.append("\\b");
+			else if (c == '\n')
+				sb.append("\\n");
+			else if (c == '\r')
+				sb.append("\\r");
+			else if (c == '\f')
+				sb.append("\\f");
+			else if (c == '\"')
+				sb.append("\\\"");
+			else if (c == '\\')
+				sb.append("\\\\");
+			else
+				sb.append((char) c);
+		});
+		return "\"" + sb.toString() + "\"";
 	}
 }
