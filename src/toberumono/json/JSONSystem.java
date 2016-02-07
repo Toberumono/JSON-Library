@@ -1,10 +1,15 @@
 package toberumono.json;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.Flushable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.nio.CharBuffer;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -66,7 +71,7 @@ public class JSONSystem {
 	private static final ConsType JSONObjectType = new ConsType("JSONObject");
 	private static final ConsType JSONKeyValuePairType = new ConsType("JSONKeyValuePair");
 	private static final Lexer lexer = new Lexer(DefaultIgnorePatterns.WHITESPACE, CommentPatterns.SINGLE_LINE_COMMENT);
-	private static boolean comments = true;
+	private static boolean comments = Boolean.parseBoolean(System.getProperty("json.comments", "true"));
 	private static String indentation = "\t";
 	
 	static {
@@ -283,6 +288,86 @@ public class JSONSystem {
 	}
 	
 	/**
+	 * Reads JSON text from a {@link Readable}
+	 * 
+	 * @param json
+	 *            the JSON text to parse
+	 * @return the root node in the JSON text. Use {@link JSONData#value()} and {@link JSONData#type()} to access the value
+	 * @throws IOException
+	 *             if an error occurs while reading from the {@link Readable}
+	 * @throws JSONSyntaxException
+	 *             if there is an error while parsing the JSON text
+	 * @see JSONData#type()
+	 * @see JSONData#value()
+	 */
+	public static final JSONData<?> readJSON(Readable json) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		CharBuffer cbuff = CharBuffer.allocate(1024);
+		while (json.read(cbuff) != -1) {
+			cbuff.flip();
+			sb.append(cbuff);
+			cbuff.clear();
+		}
+		return parseJSON(sb.toString());
+	}
+	
+	/**
+	 * Reads JSON text from a {@link Reader}
+	 * 
+	 * @param json
+	 *            the JSON text to parse
+	 * @return the root node in the JSON text. Use {@link JSONData#value()} and {@link JSONData#type()} to access the value
+	 * @throws IOException
+	 *             if an error occurs while reading from the {@link Reader}
+	 * @throws JSONSyntaxException
+	 *             if there is an error while parsing the JSON text
+	 * @see JSONData#type()
+	 * @see JSONData#value()
+	 */
+	public static final JSONData<?> readJSON(Reader json) throws IOException {
+		return readJSON(json instanceof BufferedReader ? (BufferedReader) json : new BufferedReader(json));
+	}
+	
+	/**
+	 * Reads JSON text from an {@link InputStream}
+	 * 
+	 * @param json
+	 *            the JSON text to parse
+	 * @return the root node in the JSON text. Use {@link JSONData#value()} and {@link JSONData#type()} to access the value
+	 * @throws IOException
+	 *             if an error occurs while reading from the {@link InputStream}
+	 * @throws JSONSyntaxException
+	 *             if there is an error while parsing the JSON text
+	 * @see JSONData#type()
+	 * @see JSONData#value()
+	 */
+	public static final JSONData<?> readJSON(InputStream json) throws IOException {
+		return readJSON(new BufferedReader(new InputStreamReader(json)));
+	}
+	
+	/**
+	 * Reads JSON text from a {@link BufferedReader}
+	 * 
+	 * @param json
+	 *            the JSON text to parse
+	 * @return the root node in the JSON text. Use {@link JSONData#value()} and {@link JSONData#type()} to access the value
+	 * @throws IOException
+	 *             if an error occurs while reading from the {@link BufferedReader}
+	 * @throws JSONSyntaxException
+	 *             if there is an error while parsing the JSON text
+	 * @see JSONData#type()
+	 * @see JSONData#value()
+	 */
+	public static final JSONData<?> readJSON(BufferedReader json) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		final String sep = System.lineSeparator();
+		String line;
+		while ((line = json.readLine()) != null)
+			sb.append(line).append(sep);
+		return parseJSON(sb.toString());
+	}
+	
+	/**
 	 * Writes the JSON data to the file at {@code path} if the file does not exist, it is created. If the file already
 	 * exists, it is overwritten.<br>
 	 * Convenience method for {@link #writeJSON(JSONData, Path, boolean)} with {@code formatting} set to true.
@@ -330,13 +415,13 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Writes the JSON data in text form to the given {@link Writer}.<br>
+	 * Writes the JSON data in text form to the given {@link Appendable} (base interface of {@link Writer} and {@link StringBuffer}).<br>
 	 * Convenience method for {@link #writeJSON(JSONData, Appendable, boolean)} with {@code formatting} set to true.
 	 * 
 	 * @param root
 	 *            the root node of the JSON data
 	 * @param writer
-	 *            the {@link Writer} to which to write
+	 *            the {@link Appendable} to which to write
 	 * @throws IOException
 	 *             if there is an error while writing to the file
 	 * @see JSONData#toFormattedJSON()
@@ -347,12 +432,12 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Writes the JSON data in text form to the given {@link Writer}.
+	 * Writes the JSON data in text form to the given {@link Appendable} (base interface of {@link Writer} and {@link StringBuffer}).<br>
 	 * 
 	 * @param root
 	 *            the root node of the JSON data
 	 * @param writer
-	 *            the {@link Writer} to which to write
+	 *            the {@link Appendable} writer to which to write
 	 * @param formatting
 	 *            if true, then the nicer formatting is used. The speed penalty is minor, so this should almost always be
 	 *            true
