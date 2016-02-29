@@ -19,9 +19,9 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import toberumono.json.exceptions.JSONSyntaxException;
-import toberumono.lexer.Descender;
-import toberumono.lexer.Lexer;
-import toberumono.lexer.Rule;
+import toberumono.lexer.BasicDescender;
+import toberumono.lexer.BasicLexer;
+import toberumono.lexer.BasicRule;
 import toberumono.lexer.errors.EmptyInputException;
 import toberumono.lexer.errors.LexerException;
 import toberumono.lexer.util.CommentPatterns;
@@ -70,13 +70,13 @@ public class JSONSystem {
 	private static final ConsType JSONArrayType = new ConsType("JSONArray");
 	private static final ConsType JSONObjectType = new ConsType("JSONObject");
 	private static final ConsType JSONKeyValuePairType = new ConsType("JSONKeyValuePair");
-	private static final Lexer lexer = new Lexer(DefaultIgnorePatterns.WHITESPACE, CommentPatterns.SINGLE_LINE_COMMENT);
+	private static final BasicLexer lexer = new BasicLexer(DefaultIgnorePatterns.WHITESPACE, CommentPatterns.SINGLE_LINE_COMMENT);
 	private static boolean comments = Boolean.parseBoolean(System.getProperty("json.comments", "true"));
 	private static String indentation = "\t";
 	
 	static {
 		String sign = "[\\+\\-]", basicNumber = "([0-9]+(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity = "(" + exp + "|infinity)"; //To avoid copy-pasting
-		lexer.addRule("String", new Rule(Pattern.compile("[\"\u201C]((\\\\[tbnrf'\"\u201C\u201D\\\\]|[^\"\u201C\u201D\\\\])*?)[\"\u201D]"), //Supports straight quotes and Unicode left and right-quotes
+		lexer.addRule("String", new BasicRule(Pattern.compile("[\"\u201C]((\\\\[tbnrf'\"\u201C\u201D\\\\]|[^\"\u201C\u201D\\\\])*?)[\"\u201D]"), //Supports straight quotes and Unicode left and right-quotes
 				(l, s, m) -> {
 					try {
 						return new ConsCell(new JSONString(Strings.unescape(m.group(1))), JSONValueType);
@@ -85,20 +85,20 @@ public class JSONSystem {
 						return new ConsCell(new JSONString(m.group(1)), JSONValueType);
 					}
 				}));
-		lexer.addRule("Number", new Rule(
+		lexer.addRule("Number", new BasicRule(
 				Pattern.compile("(" + sign + "?" + infinity + "(" + sign + "(i" + infinity + "|" + infinity + "i|i))?|" + sign + "?(i" + infinity + "|" + infinity + "i|i)(" + sign + infinity + ")?)",
 						Pattern.CASE_INSENSITIVE),
 				(l, s, m) -> new ConsCell(new JSONNumber<>(JSONSystem.reader.apply(m.group())), JSONValueType)));
-		lexer.addRule("Boolean", new Rule(Pattern.compile("(true|false)", Pattern.CASE_INSENSITIVE),
+		lexer.addRule("Boolean", new BasicRule(Pattern.compile("(true|false)", Pattern.CASE_INSENSITIVE),
 				(l, s, m) -> new ConsCell(new JSONBoolean(Boolean.valueOf(m.group())), JSONValueType)));
-		lexer.addRule("Null", new Rule(Pattern.compile("null", Pattern.CASE_INSENSITIVE & Pattern.LITERAL),
+		lexer.addRule("Null", new BasicRule(Pattern.compile("null", Pattern.CASE_INSENSITIVE & Pattern.LITERAL),
 				(l, s, m) -> new ConsCell(new JSONNull(), JSONValueType)));
-		lexer.addRule("Colon", new Rule(Pattern.compile(":", Pattern.LITERAL), (l, s, m) -> {
+		lexer.addRule("Colon", new BasicRule(Pattern.compile(":", Pattern.LITERAL), (l, s, m) -> {
 			@SuppressWarnings("unchecked")
-			String key = ((JSONData<String>) s.popPreviousConsCell().getCar()).value();
+			String key = ((JSONData<String>) s.getLast().getCar()).value();
 			return new ConsCell(new Pair<String, JSONData<?>>(key, (JSONData<?>) l.getNextConsCell(s, true).getCar()), JSONKeyValuePairType);
 		}));
-		lexer.addRule("Comma", new Rule(Pattern.compile(",", Pattern.LITERAL), (l, s, m) -> {
+		lexer.addRule("Comma", new BasicRule(Pattern.compile(",", Pattern.LITERAL), (l, s, m) -> {
 			try {
 				return l.getNextConsCell(s, true);
 			}
@@ -106,13 +106,13 @@ public class JSONSystem {
 				return l.getConsCellConstructor().construct();
 			}
 		}));
-		lexer.addDescender("Array", new Descender("[", "]", (l, s, m) -> {
+		lexer.addDescender("Array", new BasicDescender("[", "]", (l, s, m) -> {
 			JSONArray array = new JSONArray(m.length());
 			for (; !m.isNull(); m = m.getNextConsCell())
 				array.add((JSONData<?>) m.getCar());
 			return new ConsCell(array, JSONArrayType);
 		}));
-		lexer.addDescender("Object", new Descender("{", "}", (l, s, m) -> {
+		lexer.addDescender("Object", new BasicDescender("{", "}", (l, s, m) -> {
 			JSONObject object = new JSONObject();
 			for (; !m.isNull(); m = m.getNextConsCell()) {
 				@SuppressWarnings("unchecked")
