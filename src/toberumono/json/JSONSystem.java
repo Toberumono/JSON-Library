@@ -70,9 +70,9 @@ public class JSONSystem {
 	private static final ConsType JSONArrayType = new ConsType("JSONArray");
 	private static final ConsType JSONObjectType = new ConsType("JSONObject");
 	private static final ConsType JSONKeyValuePairType = new ConsType("JSONKeyValuePair");
-	private static final BasicLexer lexer = new BasicLexer(DefaultIgnorePatterns.WHITESPACE, CommentPatterns.SINGLE_LINE_COMMENT);
+	private static final BasicLexer lexer = new BasicLexer(DefaultIgnorePatterns.WHITESPACE);
 	private static boolean comments = Boolean.parseBoolean(System.getProperty("json.comments", "true"));
-	private static String indentation = "\t";
+	private static String indentation = System.getProperty("json.indentation", "\t");
 	
 	static {
 		String sign = "[\\+\\-]", basicNumber = "([0-9]+(\\.[0-9]*)?|0?\\.[0-9]+)", exp = basicNumber + "([eE]" + sign + "?" + basicNumber + ")?", infinity = "(" + exp + "|infinity)"; //To avoid copy-pasting
@@ -121,6 +121,8 @@ public class JSONSystem {
 			}
 			return new ConsCell(object, JSONObjectType);
 		}));
+		if (comments)
+			lexer.addIgnore(CommentPatterns.SINGLE_LINE_COMMENT);
 	}
 	
 	/**
