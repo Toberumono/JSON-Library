@@ -95,7 +95,7 @@ public class JSONSystem {
 				(l, s, m) -> new ConsCell(new JSONNull(), JSONValueType)));
 		lexer.addRule("Colon", new BasicRule(Pattern.compile(":", Pattern.LITERAL), (l, s, m) -> {
 			@SuppressWarnings("unchecked")
-			String key = ((JSONData<String>) s.getLast().getCar()).value();
+			String key = ((JSONData<String>) s.popLast().getCar()).value();
 			return new ConsCell(new Pair<String, JSONData<?>>(key, (JSONData<?>) l.getNextConsCell(s, true).getCar()), JSONKeyValuePairType);
 		}));
 		lexer.addRule("Comma", new BasicRule(Pattern.compile(",", Pattern.LITERAL), (l, s, m) -> {
