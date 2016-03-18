@@ -94,27 +94,26 @@ public class JSONSystem {
 		lexer.addRule("Null", new BasicRule(Pattern.compile("null", Pattern.CASE_INSENSITIVE & Pattern.LITERAL),
 				(l, s, m) -> new ConsCell(new JSONNull(), JSONValueType)));
 		lexer.addRule("Colon", new BasicRule(Pattern.compile(":", Pattern.LITERAL), (l, s, m) -> {
-			@SuppressWarnings("unchecked")
-			String key = ((JSONData<String>) s.popLast().getCar()).value();
+			String key = ((JSONString) s.popLast().getCar()).value();
 			return new ConsCell(new Pair<String, JSONData<?>>(key, (JSONData<?>) l.getNextConsCell(s, true).getCar()), JSONKeyValuePairType);
 		}));
 		lexer.addRule("Comma", new BasicRule(Pattern.compile(",", Pattern.LITERAL), (l, s, m) -> {
 			try {
 				return l.getNextConsCell(s, true);
 			}
-			catch (EmptyInputException e) {
-				return l.getConsCellConstructor().construct();
+			catch (EmptyInputException e) { //This can occur if there is a dangling comma
+				return null;
 			}
 		}));
 		lexer.addDescender("Array", new BasicDescender("[", "]", (l, s, m) -> {
 			JSONArray array = new JSONArray(m.length());
-			for (; !m.isNull(); m = m.getNextConsCell())
+			for (; m != null; m = m.getNextConsCell())
 				array.add((JSONData<?>) m.getCar());
 			return new ConsCell(array, JSONArrayType);
 		}));
 		lexer.addDescender("Object", new BasicDescender("{", "}", (l, s, m) -> {
 			JSONObject object = new JSONObject();
-			for (; !m.isNull(); m = m.getNextConsCell()) {
+			for (; m != null; m = m.getNextConsCell()) {
 				@SuppressWarnings("unchecked")
 				Pair<String, JSONData<?>> pair = (Pair<String, JSONData<?>>) m.getCar();
 				object.put(pair.getX(), pair.getY());
