@@ -2,6 +2,7 @@ package toberumono.json;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
@@ -72,11 +73,14 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	@Override
 	public String toJSONString() {
 		StringBuilder out = new StringBuilder("[");
-		for (JSONData<?> o : this)
-			out.append(o.toJSONString() + ", ");
-		if (out.length() > 2)
-			out = out.delete(out.length() - 2, out.length());
-		out.append("]");
+		JSONData<?> e;
+		for (Iterator<JSONData<?>> iter = this.iterator(); iter.hasNext();) {
+			e = iter.next();
+			out.append(e.toJSONString());
+			if (iter.hasNext())
+				out.append(", ");
+		}
+		out.append(']');
 		return out.toString();
 	}
 	
@@ -85,7 +89,7 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 		if (size() == 0)
 			return sb.append("[ ]");
 		final String innerIndentation = indentation + JSONSystem.getIndentation();
-		sb.append("[");
+		sb.append('[');
 		int i = 0;
 		JSONData<?> e = get(i);
 		for (; i < size() - 1; e = get(++i)) {
@@ -93,17 +97,19 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 				e = (JSONData<?>) e.value();
 				sb.append(System.lineSeparator()).append(innerIndentation);
 				e.toFormattedJSON(sb, innerIndentation);
-				sb.append(",");
+				sb.append(',');
 			}
 			else
-				sb.append(" ").append(get(i).toJSONString()).append(",");
+				sb.append(' ').append(get(i).toJSONString()).append(',');
 		}
 		if (e.type() == JSONType.OBJECT || e.type() == JSONType.ARRAY) {
 			sb.append(System.lineSeparator()).append(innerIndentation);
 			e.toFormattedJSON(sb, innerIndentation);
-			return sb.append(System.lineSeparator()).append(indentation).append("]");
+			sb.append(System.lineSeparator()).append(indentation);
 		}
-		return sb.append(" ").append(get(i).toJSONString()).append(" ]");
+		else
+			sb.append(' ').append(e.toJSONString()).append(' ');
+		return sb.append(']');
 	}
 	
 	/**
@@ -114,7 +120,7 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	 * @return a {@link JSONArray} containing the elements in {@code c}
 	 */
 	public static final JSONArray wrap(Collection<?> c) {
-		return c.stream().collect(JSONArray::new, (li, e) -> li.add(e instanceof JSONData ? (JSONData<?>) e : JSONSystem.wrap((Object) e)), JSONArray::addAll);
+		return c.stream().collect(JSONArray::new, (l, e) -> l.add(e instanceof JSONData ? (JSONData<?>) e : JSONSystem.wrap((Object) e)), JSONArray::addAll);
 	}
 	
 	/**
@@ -129,7 +135,7 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	 * @return a {@link JSONArray} containing the elements in {@code c}
 	 */
 	public static final <T> JSONArray wrap(Collection<T> c, Function<T, JSONData<?>> converter) {
-		return c.stream().collect(JSONArray::new, (li, e) -> li.add(converter.apply(e)), JSONArray::addAll);
+		return c.stream().collect(JSONArray::new, (l, e) -> l.add(converter.apply(e)), JSONArray::addAll);
 	}
 	
 	@Override

@@ -75,7 +75,7 @@ public interface JSONData<T> extends JSONSerializable {
 	 *            the indentation level for the chunk. Only used by {@link JSONObject} and {@link JSONArray}
 	 * @return a pointer to {@link StringBuilder sb}
 	 */
-	default StringBuilder toFormattedJSON(StringBuilder sb, String indentation) {
+	public default StringBuilder toFormattedJSON(StringBuilder sb, String indentation) {
 		return sb.append(toJSONString());
 	}
 }

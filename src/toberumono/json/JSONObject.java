@@ -1,7 +1,9 @@
 package toberumono.json;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Represents a bracketed group of key-value pairs in a JSON file.<br>
@@ -87,10 +89,15 @@ public final class JSONObject extends LinkedHashMap<String, JSONData<?>> impleme
 		if (size() == 0)
 			return "{ }";
 		final StringBuilder sb = new StringBuilder();
-		sb.append("{");
-		for (Map.Entry<String, JSONData<?>> e : this.entrySet())
-			sb.append(System.lineSeparator()).append(JSONString.toJSONString(e.getKey())).append(" : ").append(e.getValue().toJSONString()).append(",");
-		return sb.deleteCharAt(sb.length() - 1).append(System.lineSeparator()).append("}").toString();
+		sb.append('{');
+		Entry<String, JSONData<?>> e;
+		for (Iterator<Entry<String, JSONData<?>>> iter = entrySet().iterator(); iter.hasNext();) {
+			e = iter.next();
+			sb.append(System.lineSeparator()).append(JSONString.toJSONString(e.getKey())).append(" : ").append(e.getValue().toJSONString());
+			if (iter.hasNext())
+				sb.append(',');
+		}
+		return sb.append(System.lineSeparator()).append('}').toString();
 	}
 	
 	@Override
@@ -98,17 +105,16 @@ public final class JSONObject extends LinkedHashMap<String, JSONData<?>> impleme
 		if (size() == 0)
 			return sb.append("{ }");
 		String innerIndentation = indentation + JSONSystem.getIndentation();
-		sb.append("{");
-		forEach((k, v) -> {
-			sb.append(System.lineSeparator()).append(innerIndentation).append(JSONString.toJSONString(k)).append(" : ");
-			if (v instanceof JSONObject)
-				v.toFormattedJSON(sb, innerIndentation).append(",");
-			else {
-				v.toFormattedJSON(sb, innerIndentation);
-				sb.append(",");
-			}
-		});
-		return sb.deleteCharAt(sb.length() - 1).append(System.lineSeparator()).append(indentation).append("}");
+		sb.append('{');
+		Entry<String, JSONData<?>> e;
+		for (Iterator<Entry<String, JSONData<?>>> iter = entrySet().iterator(); iter.hasNext();) {
+			e = iter.next();
+			sb.append(System.lineSeparator()).append(innerIndentation).append(JSONString.toJSONString(e.getKey())).append(" : ");
+			e.getValue().toFormattedJSON(sb, innerIndentation);
+			if (iter.hasNext())
+				sb.append(',');
+		}
+		return sb.append(System.lineSeparator()).append(indentation).append('}');
 	}
 	
 	/**
