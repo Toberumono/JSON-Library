@@ -229,7 +229,7 @@ public final class JSONObjectWrapper<T> implements Map<String, T>, JSONData<JSON
 		
 		@Override
 		public final void forEach(Consumer<? super Map.Entry<String, T>> action) {
-			back.forEach(v -> action.accept((Map.Entry<String, T>) new WrappedEntry(v)));
+			back.forEach(v -> action.accept(new WrappedEntry(v)));
 		}
 	}
 	

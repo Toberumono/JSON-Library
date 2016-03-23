@@ -26,6 +26,7 @@ import toberumono.lexer.errors.EmptyInputException;
 import toberumono.lexer.errors.LexerException;
 import toberumono.lexer.util.CommentPatterns;
 import toberumono.lexer.util.DefaultIgnorePatterns;
+import toberumono.structures.sexpressions.BasicConsType;
 import toberumono.structures.sexpressions.ConsCell;
 import toberumono.structures.sexpressions.ConsType;
 import toberumono.structures.tuples.Pair;
@@ -66,10 +67,10 @@ public class JSONSystem {
 	private static Function<? extends Number, String> writer = defaultWriter;
 	private static Class<? extends Number> numberType = defaultNumberType;
 	
-	private static final ConsType JSONValueType = new ConsType("JSONValue");
-	private static final ConsType JSONArrayType = new ConsType("JSONArray");
-	private static final ConsType JSONObjectType = new ConsType("JSONObject");
-	private static final ConsType JSONKeyValuePairType = new ConsType("JSONKeyValuePair");
+	private static final ConsType JSONValueType = new BasicConsType("JSONValue");
+	private static final ConsType JSONArrayType = new BasicConsType("JSONArray");
+	private static final ConsType JSONObjectType = new BasicConsType("JSONObject");
+	private static final ConsType JSONKeyValuePairType = new BasicConsType("JSONKeyValuePair");
 	private static final BasicLexer lexer = new BasicLexer(DefaultIgnorePatterns.WHITESPACE);
 	private static boolean comments = Boolean.parseBoolean(System.getProperty("json.comments", "true"));
 	private static String indentation = System.getProperty("json.indentation", "\t");
@@ -107,13 +108,13 @@ public class JSONSystem {
 		}));
 		lexer.addDescender("Array", new BasicDescender("[", "]", (l, s, m) -> {
 			JSONArray array = new JSONArray(m.length());
-			for (; m != null; m = m.getNextConsCell())
+			for (; m != null; m = m.getNext())
 				array.add((JSONData<?>) m.getCar());
 			return new ConsCell(array, JSONArrayType);
 		}));
 		lexer.addDescender("Object", new BasicDescender("{", "}", (l, s, m) -> {
 			JSONObject object = new JSONObject();
-			for (; m != null; m = m.getNextConsCell()) {
+			for (; m != null; m = m.getNext()) {
 				@SuppressWarnings("unchecked")
 				Pair<String, JSONData<?>> pair = (Pair<String, JSONData<?>>) m.getCar();
 				object.put(pair.getX(), pair.getY());
