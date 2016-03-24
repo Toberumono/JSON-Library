@@ -107,7 +107,7 @@ public class JSONSystem {
 			}
 		}));
 		lexer.addDescender("Array", new BasicDescender("[", "]", (l, s, m) -> {
-			JSONArray array = new JSONArray(m.length());
+			JSONArray array = new JSONArray();
 			for (; m != null; m = m.getNext())
 				array.add((JSONData<?>) m.getCar());
 			return new ConsCell(array, JSONArrayType);
