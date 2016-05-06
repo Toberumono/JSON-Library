@@ -498,10 +498,10 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * A convenience method for simplifying the process of upgrading configuration files. If a field needs to be moved from
-	 * one location to another in a JSON file, this method will go through the list of locations in {@code containerChain}
-	 * and transfer the field into the last location in the chain. If the field is not found in any of the locations,
-	 * {@code defaultValue} is used.<br>
+	 * Designed as a convenience method for simplifying the process of upgrading configuration files. If a field needs to be
+	 * moved from one location to another in a JSON file, this method will go through the list of locations in
+	 * {@code containerChain} and transfer the field into the last location in the chain. If the field is not found in any of
+	 * the locations, {@code defaultValue} is used.<br>
 	 * Example Usage:
 	 * 
 	 * <pre>
@@ -540,10 +540,10 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * A convenience method for simplifying the process of upgrading configuration files. If a field needs to be renamed from
-	 * one name to another in a JSON file, this method will go through the list of names in {@code nameChain} and rename the
-	 * field into the last name in the chain. If a field is not identified by any of the names, {@code defaultValue} is used.
-	 * <br>
+	 * Designed as a convenience method for simplifying the process of upgrading configuration files. If a field needs to be
+	 * renamed from one name to another in a JSON file, this method will go through the list of names in {@code nameChain}
+	 * and rename the field into the last name in the chain. If a field is not identified by any of the names,
+	 * {@code defaultValue} is used.<br>
 	 * Example Usage:
 	 * 
 	 * <pre>
@@ -580,5 +580,52 @@ public class JSONSystem {
 		if (value == null)
 			value = defaultValue;
 		container.put(nameChain[lim], value);
+	}
+	
+	/**
+	 * Designed as a convenience method for simplifying the process of upgrading configuration files. This is a combination
+	 * of {@link #renameField(JSONObject, JSONData, String...)} and {@link #transferField(String, JSONData, JSONObject...)}.
+	 * <br>
+	 * Value prioritization works as follows:
+	 * <ol>
+	 * <li>If no values are found prior to the last {@link JSONObject} in {@code containerChain}, {@code defaultValue} is
+	 * used</li>
+	 * <li>If a named field is found in the {@code ith} element in {@code containerChain}, it is kept if its position
+	 * {@code nameChain} is &geq; the highest position of a found name in {@code nameChain}</li>
+	 * </ol>
+	 * 
+	 * @param defaultValue
+	 *            the default value of the field
+	 * @param containerChain
+	 *            an array of {@link JSONObject JSONObjects} from oldest to newest wherein the field could be found. The last
+	 *            {@link JSONObject} in the array is the target location in which the field should be stored
+	 * @param nameChain
+	 *            an array of {@link String Strings} from oldest to newest by which the field could be identified. The last
+	 *            {@link String} in the array is the target name of the field
+	 */
+	public static void renameAndTransferField(JSONData<?> defaultValue, JSONObject[] containerChain, String[] nameChain) {
+		if (containerChain.length < 2 || nameChain.length < 2) { //If either one is less than 2, then the only cases are forward to the simpler method and stop
+			if (containerChain.length == 1)
+				renameField(containerChain[0], defaultValue, nameChain);
+			if (nameChain.length == 1)
+				transferField(nameChain[0], defaultValue, containerChain);
+			return;
+		}
+		JSONData<?> value = defaultValue;
+		int i = 0, j = 0, highestValue = 0;
+		for (; i < containerChain.length; i++) {
+			for (; j < nameChain.length; j++) {
+				if (containerChain[i].containsKey(nameChain[j])) {
+					if (j >= highestValue) {
+						value = containerChain[i].remove(nameChain[j]);
+						highestValue = j;
+					}
+					else {
+						containerChain[i].remove(nameChain[j]);
+					}
+				}
+			}
+		}
+		containerChain[i].put(nameChain[j], value);
 	}
 }
