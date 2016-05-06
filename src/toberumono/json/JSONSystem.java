@@ -591,7 +591,7 @@ public class JSONSystem {
 	 * <li>If no values are found prior to the last {@link JSONObject} in {@code containerChain}, {@code defaultValue} is
 	 * used</li>
 	 * <li>If a named field is found in the {@code ith} element in {@code containerChain}, it is kept if its position
-	 * {@code nameChain} is &geq; the highest position of a found name in {@code nameChain}</li>
+	 * {@code nameChain} is &ge; the highest position of a found name in {@code nameChain}</li>
 	 * </ol>
 	 * 
 	 * @param defaultValue
