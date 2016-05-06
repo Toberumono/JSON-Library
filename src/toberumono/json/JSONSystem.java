@@ -115,8 +115,7 @@ public class JSONSystem {
 		lexer.addDescender("Object", new BasicDescender("{", "}", (l, s, m) -> {
 			JSONObject object = new JSONObject();
 			for (; m != null; m = m.getNext()) {
-				@SuppressWarnings("unchecked")
-				Pair<String, JSONData<?>> pair = (Pair<String, JSONData<?>>) m.getCar();
+				@SuppressWarnings("unchecked") Pair<String, JSONData<?>> pair = (Pair<String, JSONData<?>>) m.getCar();
 				object.put(pair.getX(), pair.getY());
 			}
 			return new ConsCell(object, JSONObjectType);
@@ -417,7 +416,8 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Writes the JSON data in text form to the given {@link Appendable} (base interface of {@link Writer} and {@link StringBuffer}).<br>
+	 * Writes the JSON data in text form to the given {@link Appendable} (base interface of {@link Writer} and
+	 * {@link StringBuffer}).<br>
 	 * Convenience method for {@link #writeJSON(JSONData, Appendable, boolean)} with {@code formatting} set to true.
 	 * 
 	 * @param root
@@ -434,7 +434,8 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Writes the JSON data in text form to the given {@link Appendable} (base interface of {@link Writer} and {@link StringBuffer}).<br>
+	 * Writes the JSON data in text form to the given {@link Appendable} (base interface of {@link Writer} and
+	 * {@link StringBuffer}).<br>
 	 * 
 	 * @param root
 	 *            the root node of the JSON data
@@ -501,11 +502,10 @@ public class JSONSystem {
 	 * one location to another in a JSON file, this method will go through the list of locations in {@code containerChain}
 	 * and transfer the field into the last location in the chain. If the field is not found in any of the locations,
 	 * {@code defaultValue} is used.<br>
-	 * Example Usage:<br>
+	 * Example Usage:
 	 * 
 	 * <pre>
 	 * {
-	 * 	&#64;code
 	 * 	JSONObject json = JSONSystem.loadJSON(path);
 	 * 	JSONString def = new JSONString("testing testing");
 	 * 	JSONObject oldSpot1 = json.get("oldSpot1"), oldSpot2 = json.get("oldSpot2"), newSpot = json.get("newSpot");
@@ -518,7 +518,8 @@ public class JSONSystem {
 	 * @param defaultValue
 	 *            the default value of the field
 	 * @param containerChain
-	 *            an array of {@link JSONObject JSONObjects} from oldest to newest wherein the field could be found
+	 *            an array of {@link JSONObject JSONObjects} from oldest to newest wherein the field could be found. The last
+	 *            {@link JSONObject} in the array is the target location in which the field should be stored
 	 */
 	public static void transferField(String name, JSONData<?> defaultValue, JSONObject... containerChain) {
 		if (containerChain.length == 0)
@@ -536,5 +537,48 @@ public class JSONSystem {
 		if (value == null)
 			value = defaultValue;
 		containerChain[lim].put(name, value);
+	}
+	
+	/**
+	 * A convenience method for simplifying the process of upgrading configuration files. If a field needs to be renamed from
+	 * one name to another in a JSON file, this method will go through the list of names in {@code nameChain} and rename the
+	 * field into the last name in the chain. If a field is not identified by any of the names, {@code defaultValue} is used.
+	 * <br>
+	 * Example Usage:
+	 * 
+	 * <pre>
+	 * {
+	 * 	JSONObject json = JSONSystem.loadJSON(path);
+	 * 	JSONObject container = json.get("container");
+	 * 	JSONString def = new JSONString("testing testing");
+	 * 	String oldName1 = "foo", oldName2 = "bar", newName = "demo";
+	 * 	transferField(container, def, oldName1, oldName2, newName);
+	 * }
+	 * </pre>
+	 * 
+	 * @param container
+	 *            the {@link JSONObject} in which the field is to be renamed
+	 * @param defaultValue
+	 *            the default value of the field
+	 * @param nameChain
+	 *            an array of {@link String Strings} from oldest to newest by which the field could be identified. The last
+	 *            {@link String} in the array is the target name of the field
+	 */
+	public static void renameField(JSONObject container, JSONData<?> defaultValue, String... nameChain) {
+		if (nameChain.length == 0)
+			return;
+		if (nameChain.length == 1) {
+			if (!container.containsKey(nameChain[0]))
+				container.put(nameChain[0], defaultValue);
+			return;
+		}
+		JSONData<?> value = null;
+		int lim = nameChain.length - 1;
+		for (int i = 0; i < lim; i++)
+			if (container.containsKey(nameChain[i]))
+				value = container.remove(nameChain[i]);
+		if (value == null)
+			value = defaultValue;
+		container.put(nameChain[lim], value);
 	}
 }
