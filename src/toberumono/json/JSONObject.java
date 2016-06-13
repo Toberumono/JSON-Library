@@ -11,7 +11,7 @@ import java.util.Map.Entry;
  * 
  * @author Toberumono
  */
-public final class JSONObject extends LinkedHashMap<String, JSONData<?>> implements JSONData<LinkedHashMap<String, JSONData<?>>>, ModifiableJSONData {
+public final class JSONObject extends LinkedHashMap<String, JSONData<?>> implements JSONData<LinkedHashMap<String, JSONData<?>>>, ModifiableJSONData, Cloneable {
 	private boolean modified;
 	
 	/**
@@ -43,6 +43,23 @@ public final class JSONObject extends LinkedHashMap<String, JSONData<?>> impleme
 	@Override
 	public JSONType type() {
 		return JSONType.OBJECT;
+	}
+
+	@Override
+	public JSONObject deepCopy() {
+		JSONObject out = (JSONObject) clone();
+		for (Entry<String, JSONData<?>> element : out.entrySet())
+			out.put(element.getKey(), element.getValue().deepCopy());
+		if (!isModified()) //We can take advantage of out already being flagged as modifiable to avoid having to copy the "modifiable" field
+			out.clearModified();
+		return out;
+	}
+	
+	@Override
+	public Object clone() {
+		JSONObject out = (JSONObject) super.clone();
+		out.modified = modified;
+		return out;
 	}
 	
 	@Override

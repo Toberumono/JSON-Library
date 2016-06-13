@@ -21,6 +21,11 @@ public class JSONString extends JSONValue<String> {
 	public String toJSONString() {
 		return toJSONString(value());
 	}
+
+	@Override
+	public JSONString deepCopy() {
+		return new JSONString(value());
+	}
 	
 	/**
 	 * Converts a {@link String} into a value that can be written to a JSON file.<br>

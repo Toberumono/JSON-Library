@@ -13,7 +13,7 @@ public class JSONNull implements JSONData<Void> {
 	}
 	
 	/**
-	 * @return null
+	 * @return {@code null}
 	 */
 	@Override
 	public Void value() {
@@ -26,6 +26,11 @@ public class JSONNull implements JSONData<Void> {
 	@Override
 	public JSONType type() {
 		return JSONType.NULL;
+	}
+
+	@Override
+	public JSONNull deepCopy() {
+		return new JSONNull();
 	}
 	
 	@Override

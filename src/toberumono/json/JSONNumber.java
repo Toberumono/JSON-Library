@@ -20,6 +20,11 @@ public class JSONNumber<T extends Number> extends JSONValue<T> {
 	public JSONNumber(T value) {
 		super(value, JSONType.NUMBER);
 	}
+
+	@Override
+	public JSONNumber<T> deepCopy() {
+		return new JSONNumber<>(value());
+	}
 	
 	@Override
 	@SuppressWarnings("unchecked")

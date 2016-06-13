@@ -11,7 +11,7 @@ import java.util.function.Function;
  * 
  * @author Toberumono
  */
-public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<JSONData<?>>>, ModifiableJSONData {
+public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<JSONData<?>>>, ModifiableJSONData, Cloneable {
 	private boolean modified;
 	
 	/**
@@ -58,6 +58,23 @@ public class JSONArray extends ArrayList<JSONData<?>> implements JSONData<List<J
 	@Override
 	public final JSONType type() {
 		return JSONType.ARRAY;
+	}
+
+	@Override
+	public JSONArray deepCopy() {
+		JSONArray out = (JSONArray) clone();
+		for (int i = 0; i < out.size(); i++)
+			out.set(i, out.get(i).deepCopy());
+		if (!isModified()) //We can take advantage of out already being flagged as modifiable to avoid having to copy the "modifiable" field
+			out.clearModified();
+		return out;
+	}
+	
+	@Override
+	public Object clone() {
+		JSONArray out = (JSONArray) super.clone();
+		out.modified = modified;
+		return out;
 	}
 	
 	/**

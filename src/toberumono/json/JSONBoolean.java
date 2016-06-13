@@ -21,4 +21,9 @@ public class JSONBoolean extends JSONValue<Boolean> {
 	public String toJSONString() {
 		return value().toString();
 	}
+
+	@Override
+	public JSONBoolean deepCopy() {
+		return new JSONBoolean(value());
+	}
 }

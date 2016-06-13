@@ -22,6 +22,11 @@ public interface JSONData<T> extends JSONSerializable {
 	public JSONType type();
 	
 	/**
+	 * @return a deep clone of the {@link JSONData} instance and the value that it wraps
+	 */
+	public JSONData<T> deepCopy();
+	
+	/**
 	 * Attempts to serialize the encapsulated value into a JSON String.<br>
 	 * The JSON text output by this method, while syntactically accurate, is not guaranteed to be easily read or edited by
 	 * users. Use {@link #toFormattedJSON()} for text that users can interact with.

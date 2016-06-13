@@ -162,13 +162,19 @@ public final class JSONObjectWrapper<T> implements Map<String, T>, JSONData<JSON
 	}
 	
 	@Override
+	public JSONObjectWrapper<T> deepCopy() {
+		return new JSONObjectWrapper<>(back.deepCopy());
+	}
+	
+	@Override
 	public Set<Map.Entry<String, T>> entrySet() {
 		Set<Map.Entry<String, T>> es;
 		return (es = entrySet) == null ? (entrySet = new EntrySet(back.entrySet())) : es;
 	}
 	
 	private final Function<String, String> esk = k -> k;
-	@SuppressWarnings("unchecked") private final Function<JSONData<?>, T> esvc = v -> (T) v.value();
+	@SuppressWarnings("unchecked")
+	private final Function<JSONData<?>, T> esvc = v -> (T) v.value();
 	private final Function<T, JSONData<?>> esvu = v -> JSONSystem.wrap(v);
 	
 	private final class WrappedEntry implements Map.Entry<String, T> {
