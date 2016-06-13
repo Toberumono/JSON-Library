@@ -536,7 +536,8 @@ public class JSONSystem {
 				value = containerChain[i].remove(name);
 		if (value == null)
 			value = defaultValue;
-		containerChain[lim].put(name, value);
+		if (!containerChain[lim].containsKey(name))
+			containerChain[lim].put(name, value);
 	}
 	
 	/**
@@ -579,7 +580,8 @@ public class JSONSystem {
 				value = container.remove(nameChain[i]);
 		if (value == null)
 			value = defaultValue;
-		container.put(nameChain[lim], value);
+		if (!container.containsKey(nameChain[lim]))
+			container.put(nameChain[lim], value);
 	}
 	
 	/**
@@ -626,6 +628,7 @@ public class JSONSystem {
 				}
 			}
 		}
-		containerChain[i].put(nameChain[j], value);
+		if (!containerChain[i].containsKey(nameChain[j]))
+			containerChain[i].put(nameChain[j], value);
 	}
 }
