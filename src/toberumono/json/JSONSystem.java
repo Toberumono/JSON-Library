@@ -33,8 +33,8 @@ import toberumono.structures.tuples.Pair;
 import toberumono.utils.general.Strings;
 
 /**
- * Core class for this library. Contains methods to read from and write to JSON files as well as change the type used for
- * numbers when reading from and writing to JSON files.
+ * Core class for this library. Contains methods to read from and write to JSON files as well as change the type used for numbers when reading from
+ * and writing to JSON files.
  * 
  * @author Toberumono
  * @see #loadJSON(Path)
@@ -178,8 +178,7 @@ public class JSONSystem {
 	/**
 	 * Set whether parsing comments in JSON files is be enabled.<br>
 	 * Comments start with '//' and continue to the end of the line.<br>
-	 * This method forwards to {@link #enableComments()} or {@link #disableComments()} depending on the value of
-	 * {@code enabled}.
+	 * This method forwards to {@link #enableComments()} or {@link #disableComments()} depending on the value of {@code enabled}.
 	 * 
 	 * @param enabled
 	 *            whether parsing of comments in JSON text should be enabled
@@ -206,8 +205,7 @@ public class JSONSystem {
 	 * @param writer
 	 *            the function with which to write numbers to a {@link String string}
 	 * @param <T>
-	 *            synchronizes the type used for numbers in two functions. If this method is used correctly, this will not
-	 *            have to be explicitly set.
+	 *            synchronizes the type used for numbers in two functions. If this method is used correctly, this will not have to be explicitly set.
 	 * @see #defaultReader
 	 * @see #defaultWriter
 	 */
@@ -248,8 +246,7 @@ public class JSONSystem {
 	 * 
 	 * @param path
 	 *            the {@link Path} to the file to open
-	 * @return the root node in the JSON file. Use {@link JSONData#value()} and {@link JSONData#type()} to access the value
-	 *         and determine the type
+	 * @return the root node in the JSON file. Use {@link JSONData#value()} and {@link JSONData#type()} to access the value and determine the type
 	 * @throws IOException
 	 *             if there is an error opening the file
 	 * @throws JSONSyntaxException
@@ -369,8 +366,7 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Writes the JSON data to the file at {@code path} if the file does not exist, it is created. If the file already
-	 * exists, it is overwritten.<br>
+	 * Writes the JSON data to the file at {@code path} if the file does not exist, it is created. If the file already exists, it is overwritten.<br>
 	 * Convenience method for {@link #writeJSON(JSONData, Path, boolean)} with {@code formatting} set to true.
 	 * 
 	 * @param root
@@ -387,20 +383,18 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Writes the JSON data to the file at {@code path} if the file does not exist, it is created. If the file already
-	 * exists, it is overwritten.<br>
-	 * This simply creates a new {@link BufferedWriter} via {@link Files#newBufferedWriter(Path, OpenOption...)} without any
-	 * arguments for the {@link OpenOption} parameter and forwards to {@link #writeJSON(JSONData, Appendable, boolean)}.<br>
-	 * <b>Note</b>: For consistency with previous versions (and general good formatting), it prints a terminating newline
-	 * after calling {@link #writeJSON(JSONData, Appendable, boolean)} if formatting is enabled.
+	 * Writes the JSON data to the file at {@code path} if the file does not exist, it is created. If the file already exists, it is overwritten.<br>
+	 * This simply creates a new {@link BufferedWriter} via {@link Files#newBufferedWriter(Path, OpenOption...)} without any arguments for the
+	 * {@link OpenOption} parameter and forwards to {@link #writeJSON(JSONData, Appendable, boolean)}.<br>
+	 * <b>Note</b>: For consistency with previous versions (and general good formatting), it prints a terminating newline after calling
+	 * {@link #writeJSON(JSONData, Appendable, boolean)} if formatting is enabled.
 	 * 
 	 * @param root
 	 *            the root node of the JSON data
 	 * @param path
 	 *            the {@link Path} to the file
 	 * @param formatting
-	 *            if true, then the nicer formatting is used. The speed penalty is minor, so this should almost always be
-	 *            true
+	 *            if true, then the nicer formatting is used. The speed penalty is minor, so this should almost always be true
 	 * @throws IOException
 	 *             if there is an error while writing to the file
 	 * @see JSONData#toFormattedJSON()
@@ -416,8 +410,7 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Writes the JSON data in text form to the given {@link Appendable} (base interface of {@link Writer} and
-	 * {@link StringBuffer}).<br>
+	 * Writes the JSON data in text form to the given {@link Appendable} (base interface of {@link Writer} and {@link StringBuffer}).<br>
 	 * Convenience method for {@link #writeJSON(JSONData, Appendable, boolean)} with {@code formatting} set to true.
 	 * 
 	 * @param root
@@ -434,16 +427,14 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Writes the JSON data in text form to the given {@link Appendable} (base interface of {@link Writer} and
-	 * {@link StringBuffer}).<br>
+	 * Writes the JSON data in text form to the given {@link Appendable} (base interface of {@link Writer} and {@link StringBuffer}).<br>
 	 * 
 	 * @param root
 	 *            the root node of the JSON data
 	 * @param writer
 	 *            the {@link Appendable} writer to which to write
 	 * @param formatting
-	 *            if true, then the nicer formatting is used. The speed penalty is minor, so this should almost always be
-	 *            true
+	 *            if true, then the nicer formatting is used. The speed penalty is minor, so this should almost always be true
 	 * @throws IOException
 	 *             if there is an error while writing to the file
 	 * @see JSONData#toFormattedJSON()
@@ -458,12 +449,10 @@ public class JSONSystem {
 	
 	/**
 	 * Attempts to wrap {@code value} within the appropriate container for this library.<br>
-	 * If the value is one of the basic types for JSON, it gets wrapped within the that type's container (including
-	 * {@code null}).<br>
-	 * If it implements {@link JSONRepresentable}, this method calls {@link JSONRepresentable#toJSONObject()} and returns the
-	 * result.<br>
-	 * If the value is an instance of {@link JSONSerializable}, it wraps the value within a {@link JSONWrapped} object.
-	 * Otherwise, it throws an {@link UnsupportedOperationException}.
+	 * If the value is one of the basic types for JSON, it gets wrapped within the that type's container (including {@code null}).<br>
+	 * If it implements {@link JSONRepresentable}, this method calls {@link JSONRepresentable#toJSONObject()} and returns the result.<br>
+	 * If the value is an instance of {@link JSONSerializable}, it wraps the value within a {@link JSONWrapped} object. Otherwise, it throws an
+	 * {@link UnsupportedOperationException}.
 	 * 
 	 * @param value
 	 *            the value to wrap, which must
@@ -471,8 +460,8 @@ public class JSONSystem {
 	 *            the container type (this is determined automatically if this method is used appropriately)
 	 * @return the wrapped value
 	 * @throws UnsupportedOperationException
-	 *             if the value is not part of JSON's default supported values and does not implement
-	 *             {@link JSONSerializable} or {@link JSONRepresentable}
+	 *             if the value is not part of JSON's default supported values and does not implement {@link JSONSerializable} or
+	 *             {@link JSONRepresentable}
 	 */
 	@SuppressWarnings("unchecked")
 	public static final <T extends JSONData<?>> T wrap(Object value) {
@@ -498,10 +487,9 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Designed as a convenience method for simplifying the process of upgrading configuration files. If a field needs to be
-	 * moved from one location to another in a JSON file, this method will go through the list of locations in
-	 * {@code containerChain} and transfer the field into the last location in the chain. If the field is not found in any of
-	 * the locations, {@code defaultValue} is used.<br>
+	 * Designed as a convenience method for simplifying the process of upgrading configuration files. If a field needs to be moved from one location
+	 * to another in a JSON file, this method will go through the list of locations in {@code containerChain} and transfer the field into the last
+	 * location in the chain. If the field is not found in any of the locations, {@code defaultValue} is used.<br>
 	 * Example Usage:
 	 * 
 	 * <pre>
@@ -518,8 +506,8 @@ public class JSONSystem {
 	 * @param defaultValue
 	 *            the default value of the field
 	 * @param containerChain
-	 *            an array of {@link JSONObject JSONObjects} from oldest to newest wherein the field could be found. The last
-	 *            {@link JSONObject} in the array is the target location in which the field should be stored
+	 *            an array of {@link JSONObject JSONObjects} from oldest to newest wherein the field could be found. The last {@link JSONObject} in
+	 *            the array is the target location in which the field should be stored
 	 */
 	public static void transferField(String name, JSONData<?> defaultValue, JSONObject... containerChain) {
 		if (containerChain.length == 0)
@@ -541,10 +529,9 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Designed as a convenience method for simplifying the process of upgrading configuration files. If a field needs to be
-	 * renamed from one name to another in a JSON file, this method will go through the list of names in {@code nameChain}
-	 * and rename the field into the last name in the chain. If a field is not identified by any of the names,
-	 * {@code defaultValue} is used.<br>
+	 * Designed as a convenience method for simplifying the process of upgrading configuration files. If a field needs to be renamed from one name to
+	 * another in a JSON file, this method will go through the list of names in {@code nameChain} and rename the field into the last name in the
+	 * chain. If a field is not identified by any of the names, {@code defaultValue} is used.<br>
 	 * Example Usage:
 	 * 
 	 * <pre>
@@ -562,8 +549,8 @@ public class JSONSystem {
 	 * @param defaultValue
 	 *            the default value of the field
 	 * @param nameChain
-	 *            an array of {@link String Strings} from oldest to newest by which the field could be identified. The last
-	 *            {@link String} in the array is the target name of the field
+	 *            an array of {@link String Strings} from oldest to newest by which the field could be identified. The last {@link String} in the
+	 *            array is the target name of the field
 	 */
 	public static void renameField(JSONObject container, JSONData<?> defaultValue, String... nameChain) {
 		if (nameChain.length == 0)
@@ -585,25 +572,23 @@ public class JSONSystem {
 	}
 	
 	/**
-	 * Designed as a convenience method for simplifying the process of upgrading configuration files. This is a combination
-	 * of {@link #renameField(JSONObject, JSONData, String...)} and {@link #transferField(String, JSONData, JSONObject...)}.
-	 * <br>
+	 * Designed as a convenience method for simplifying the process of upgrading configuration files. This is a combination of
+	 * {@link #renameField(JSONObject, JSONData, String...)} and {@link #transferField(String, JSONData, JSONObject...)}. <br>
 	 * Value prioritization works as follows:
 	 * <ol>
-	 * <li>If no values are found prior to the last {@link JSONObject} in {@code containerChain}, {@code defaultValue} is
-	 * used</li>
-	 * <li>If a named field is found in the {@code ith} element in {@code containerChain}, it is kept if its position
-	 * {@code nameChain} is &ge; the highest position of a found name in {@code nameChain}</li>
+	 * <li>If no values are found prior to the last {@link JSONObject} in {@code containerChain}, {@code defaultValue} is used</li>
+	 * <li>If a named field is found in the {@code ith} element in {@code containerChain}, it is kept if its position {@code nameChain} is &ge; the
+	 * highest position of a found name in {@code nameChain}</li>
 	 * </ol>
 	 * 
 	 * @param defaultValue
 	 *            the default value of the field
 	 * @param containerChain
-	 *            an array of {@link JSONObject JSONObjects} from oldest to newest wherein the field could be found. The last
-	 *            {@link JSONObject} in the array is the target location in which the field should be stored
+	 *            an array of {@link JSONObject JSONObjects} from oldest to newest wherein the field could be found. The last {@link JSONObject} in
+	 *            the array is the target location in which the field should be stored
 	 * @param nameChain
-	 *            an array of {@link String Strings} from oldest to newest by which the field could be identified. The last
-	 *            {@link String} in the array is the target name of the field
+	 *            an array of {@link String Strings} from oldest to newest by which the field could be identified. The last {@link String} in the
+	 *            array is the target name of the field
 	 */
 	public static void renameAndTransferField(JSONData<?> defaultValue, JSONObject[] containerChain, String[] nameChain) {
 		if (containerChain.length < 2 || nameChain.length < 2) { //If either one is less than 2, then the only cases are forward to the simpler method and stop

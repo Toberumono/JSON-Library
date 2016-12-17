@@ -6,6 +6,11 @@ package toberumono.json;
  * @author Toberumono
  */
 public class JSONNull implements JSONData<Void> {
+	/**
+	 * A {@link JSONNull} representing the value {@code null}. This is provided for the purpose of reducing memory consumption when handling a large
+	 * number of {@link JSONNull JSONNulls}.
+	 */
+	public static final JSONNull NULL = new JSONNull();
 	
 	@Override
 	public String toJSONString() {
@@ -27,10 +32,10 @@ public class JSONNull implements JSONData<Void> {
 	public JSONType type() {
 		return JSONType.NULL;
 	}
-
+	
 	@Override
 	public JSONNull deepCopy() {
-		return new JSONNull();
+		return this;
 	}
 	
 	@Override
